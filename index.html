@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cyber Defense | Foco e Força</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #020617;
+            --panel: #0f172a;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --text-sec: #94a3b8;
+            --radius: 24px;
+        }
+
+        body.high-contrast { --bg: #000; --panel: #000; --text: #fff; --accent: #ffff00; }
+        body.large-text { font-size: 1.25rem; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--panel);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            position: relative;
+        }
+
+        .hidden { display: none !important; }
+
+        .settings-bar { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
+        .icon-btn {
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+
+        .btn {
+            width: 100%; padding: 18px; margin-top: 15px; border: none; border-radius: 16px;
+            font-weight: 800; cursor: pointer; transition: 0.1s; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            text-transform: uppercase;
+        }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .btn-outline { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn:active { transform: scale(0.96); opacity: 0.9; }
+
+        .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.3s; }
+
+        #modal-acc {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="modal-acc">
+        <div class="container" style="max-width: 350px;">
+            <h2 style="margin-bottom: 20px;">Acessibilidade</h2>
+            <button class="btn btn-outline" onclick="toggleOption('voice')">🔊 VOZ: <span id="v-status">LIGADA</span></button>
+            <button class="btn btn-outline" onclick="toggleOption('music')">🎵 MÚSICA: <span id="m-status">DESLIGADA</span></button>
+            <button class="btn btn-outline" onclick="toggleOption('contrast')">👁️ ALTO CONTRASTE</button>
+            <button class="btn btn-outline" onclick="toggleOption('size')">➕ TEXTO GRANDE</button>
+            <button class="btn btn-primary" style="background: var(--danger); margin-top: 15px;" onclick="closeAcc()">FECHAR</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="settings-bar">
+            <button class="icon-btn" onclick="openAcc()">⚙️</button>
+        </div>
+
+        <!-- TELA INICIAL -->
+        <div id="scr-start">
+            <div style="font-size: 60px; margin-bottom: 20px;">🦾</div>
+            <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px;">CYBER DEFENSE</h1>
+            <p style="color: var(--text-sec); margin-bottom: 30px;">Treine sua mente para ser tão forte quanto seu peitoral. 10 desafios por nível.</p>
+            <button class="btn btn-primary" onclick="initTraining()">INICIAR PROTOCOLO ➔</button>
+        </div>
+
+        <!-- CATEGORIAS -->
+        <div id="scr-cats" class="hidden">
+            <h2 style="margin-bottom: 20px;">Nível de Foco</h2>
+            <button class="btn btn-outline" onclick="startLevel('teen')">ADOLESCENTE (10-18)</button>
+            <button class="btn btn-outline" onclick="startLevel('adult')">ADULTO (19-35)</button>
+            <button class="btn btn-outline" onclick="startLevel('senior')">SÊNIOR (36+)</button>
+        </div>
+
+        <!-- QUIZ -->
+        <div id="scr-quiz" class="hidden">
+            <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
+            <div id="q-text" style="font-weight: 700; font-size: 1.2rem; min-height: 120px; display: flex; align-items: center; justify-content: center; line-height: 1.4;"></div>
+            
+            <div id="q-actions">
+                <button class="btn btn-success" onclick="verify(true)">VERDADEIRO</button>
+                <button class="btn btn-danger" onclick="verify(false)">FALSO</button>
+            </div>
+
+            <div id="q-feedback" class="hidden">
+                <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left;">
+                    <h3 id="f-title" style="font-weight: 800;"></h3>
+                    <p id="f-desc" style="margin-top: 10px; font-size: 0.95rem; color: var(--text-sec);"></p>
+                </div>
+                <button class="btn btn-primary" onclick="nextQuestion()">PRÓXIMO ➔</button>
+            </div>
+        </div>
+
+        <!-- RESULTADO -->
+        <div id="scr-end" class="hidden">
+            <h1 style="color: var(--success); font-weight: 800;">MISSÃO CONCLUÍDA</h1>
+            <div id="final-score" style="font-size: 5rem; font-weight: 900; color: var(--accent); margin: 20px 0;">0/10</div>
+            <button class="btn btn-primary" onclick="location.reload()">REPETIR TREINO</button>
+        </div>
+    </div>
+
+<script>
+    const QUIZ = {
+        teen: [
+            {q: "Mito: 'Ganhar moedas grátis em sites que pedem sua senha é seguro.'", a: false, r: "Falso. Isso é roubo de conta.", d: "Nunca digite sua senha de jogo em sites que prometem itens grátis."},
+            {q: "Mito: 'O modo anônimo esconde seu histórico do dono do Wi-Fi.'", a: false, r: "Falso. O anonimato é local.", d: "O administrador da rede ainda vê o tráfego de dados."},
+            {q: "Mito: 'Fotos enviadas no Zap podem ser salvas por print.'", a: true, r: "Verdadeiro. A rede não esquece.", d: "Pense antes de enviar. Uma vez enviado, o controle é perdido."},
+            {q: "Mito: 'Instalar mods de sites estranhos pode infectar seu celular.'", a: true, r: "Verdadeiro. Vírus se escondem em arquivos.", d: "Use apenas lojas oficiais como Play Store ou App Store."},
+            {q: "Mito: 'Cyberbullying não dá nada porque é na internet.'", a: false, r: "Falso. É crime e machuca muito.", d: "Um guerreiro protege os outros, não os ataca."},
+            {q: "Mito: 'É seguro usar a mesma senha em todos os jogos.'", a: false, r: "Falso. É o efeito cascata.", d: "Se um site vazar, o hacker entra em todas as suas contas."},
+            {q: "Mito: 'Sua senha deve ter símbolos como @ ou #.'", a: true, r: "Verdadeiro. Fica muito mais difícil de hackear.", d: "Misture letras, números e símbolos sempre."},
+            {q: "Mito: 'Wi-Fi aberto de shopping é ótimo para ver o banco.'", a: false, r: "Falso. É perigoso.", d: "Hackers podem 'escutar' sua conexão em redes abertas."},
+            {q: "Mito: 'Verificação em duas etapas protege sua conta.'", a: true, r: "Verdadeiro. É a melhor defesa.", d: "Ative o 2FA em todas as suas redes sociais agora mesmo."},
+            {q: "Mito: 'Seu endereço IP diz exatamente onde você mora.'", a: false, r: "Falso. Diz apenas a região.", d: "Mas não compartilhe dados pessoais com estranhos em chats."}
+        ],
+        adult: [
+            {q: "Mito: 'Bancos pedem sua senha por telefone para cancelar compras.'", a: false, r: "Falso. Bancos nunca pedem senha.", d: "Se alguém pedir sua senha por voz, desligue. É golpe."},
+            {q: "Mito: 'Links de PDF por e-mail podem instalar vírus espiões.'", a: true, r: "Verdadeiro. Malwares se escondem em anexos.", d: "Confira o remetente antes de abrir qualquer arquivo."},
+            {q: "Mito: 'Gerenciadores de senhas são mais seguros que anotar no papel.'", a: true, r: "Verdadeiro. Eles criptografam tudo.", d: "Use um gerenciador para ter senhas únicas e fortes."},
+            {q: "Mito: 'O cadeado verde no site garante que ele é honesto.'", a: false, r: "Falso. Garante apenas que é criptografado.", d: "Sites de bandidos também usam cadeados hoje em dia."},
+            {q: "Mito: 'Fazer Pix para ganhar o dobro é uma promoção real.'", a: false, r: "Falso. É o golpe do Urubu do Pix.", d: "Ninguém dá dinheiro de graça na internet. Cuidado."},
+            {q: "Mito: 'Postar foto do cartão de embarque é perigoso.'", a: true, r: "Verdadeiro. Seus dados estão no código.", d: "Criminosos podem roubar suas milhas ou cancelar seu voo."},
+            {q: "Mito: 'Salvar senhas no navegador sem senha mestre é arriscado.'", a: true, r: "Verdadeiro. Alguém no seu PC verá tudo.", d: "Proteja seu perfil do navegador com senha."},
+            {q: "Mito: 'A câmera do notebook pode ser ligada sem você saber.'", a: true, r: "Verdadeiro. Use um protetor físico.", d: "Hackers usam RATs para espionar vítimas pela webcam."},
+            {q: "Mito: 'Investir em sites sem registro na CVM é seguro.'", a: false, r: "Falso. É chance alta de pirâmide.", d: "Verifique sempre se a corretora é autorizada no Brasil."},
+            {q: "Mito: 'Comprar em sites HTTP (sem o S) é perigoso.'", a: true, r: "Verdadeiro. Seus dados viajam abertos.", d: "Use apenas sites com HTTPS para compras e bancos."}
+        ],
+        senior: [
+            {q: "Mito: 'O banco manda motoboy buscar seu cartão em casa.'", a: false, r: "Falso. Isso é golpe puro.", d: "O banco nunca recolhe cartões físicos. Destrua o chip se vencer."},
+            {q: "Mito: 'Se um parente pedir dinheiro por Zap, ligue por vídeo.'", a: true, r: "Verdadeiro. Criminosos usam fotos falsas.", d: "Sempre confirme a identidade antes de fazer qualquer Pix."},
+            {q: "Mito: 'Data de nascimento é uma senha forte e segura.'", a: false, r: "Falso. É a primeira que tentam.", d: "Use frases ou combinações aleatórias difíceis de adivinhar."},
+            {q: "Mito: 'Biometria (dedo/rosto) protege seu banco no celular.'", a: true, r: "Verdadeiro. É muito mais difícil de burlar.", d: "Ative a proteção por digital em todos os apps financeiros."},
+            {q: "Mito: 'Clicar em 'Remover' em e-mail de Spam é seguro.'", a: false, r: "Falso. Confirma que seu e-mail existe.", d: "Apenas apague e bloqueie. Não clique em nada dentro do spam."},
+            {q: "Mito: 'Atualizar o celular deixa ele mais seguro contra vírus.'", a: true, r: "Verdadeiro. Fecha buracos de segurança.", d: "Mantenha o sistema sempre na última versão disponível."},
+            {q: "Mito: 'Promoções de aniversário de marcas famosas no Zap são reais.'", a: false, r: "Falso. Quase sempre é roubo de dados.", d: "Confira no site oficial da marca antes de clicar em links."},
+            {q: "Mito: 'Usar o Bluetooth ligado o tempo todo é um risco.'", a: true, r: "Verdadeiro. Facilita invasões próximas.", d: "Desligue o Bluetooth e o Wi-Fi quando sair de casa."},
+            {q: "Mito: 'Empréstimo que pede dinheiro adiantado é golpe.'", a: true, r: "Verdadeiro. Taxa de liberação não existe.", d: "Nenhuma financeira séria pede depósito para liberar crédito."},
+            {q: "Mito: 'Seu neto de 10 anos sabe mais de segurança que você.'", a: false, r: "Falso. Crianças são alvos fáceis.", d: "A experiência de vida ajuda a detectar mentiras que crianças ignoram."}
+        ]
+    };
+
+    let state = { voice: true, music: false, score: 0, idx: 0, pool: [] };
+
+    function talk(t) {
+        if (!state.voice) return;
+        try {
+            window.speechSynthesis.cancel();
+            const m = new SpeechSynthesisUtterance(t);
+            m.lang = 'pt-BR';
+            window.speechSynthesis.speak(m);
+        } catch(e) {}
+    }
+
+    function openAcc() { document.getElementById('modal-acc').style.display = 'flex'; }
+    function closeAcc() { document.getElementById('modal-acc').style.display = 'none'; }
+
+    function toggleOption(opt) {
+        if(opt === 'voice') {
+            state.voice = !state.voice;
+            document.getElementById('v-status').innerText = state.voice ? "LIGADA" : "DESLIGADA";
+        }
+        if(opt === 'music') {
+            state.music = !state.music;
+            const audio = document.getElementById('bg-music');
+            if(state.music) audio.play().catch(() => {}); else audio.pause();
+            document.getElementById('m-status').innerText = state.music ? "LIGADA" : "DESLIGADA";
+        }
+        if(opt === 'contrast') document.body.classList.toggle('high-contrast');
+        if(opt === 'size') document.body.classList.toggle('large-text');
+    }
+
+    function initTraining() {
+        // Força a mudança de tela primeiro, sem depender da voz
+        document.getElementById('scr-start').classList.add('hidden');
+        document.getElementById('scr-cats').classList.remove('hidden');
+        // Tenta falar só depois
+        setTimeout(() => { talk("Escolha seu nível de foco."); }, 100);
+    }
+
+    function startLevel(lvl) {
+        state.pool = [...QUIZ[lvl]].sort(() => Math.random() - 0.5);
+        state.idx = 0; state.score = 0;
+        document.getElementById('scr-cats').classList.add('hidden');
+        document.getElementById('scr-quiz').classList.remove('hidden');
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = state.pool[state.idx];
+        document.getElementById('p-fill').style.width = `${(state.idx / state.pool.length) * 100}%`;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('q-actions').classList.remove('hidden');
+        document.getElementById('q-feedback').classList.add('hidden');
+        talk(q.q);
+    }
+
+    function verify(val) {
+        const q = state.pool[state.idx];
+        const win = val === q.a;
+        if(win) state.score++;
+        
+        document.getElementById('q-actions').classList.add('hidden');
+        document.getElementById('q-feedback').classList.remove('hidden');
+        
+        const t = document.getElementById('f-title');
+        t.innerText = win ? "DEFESA ATIVA! ✅" : "INVASÃO! ❌";
+        t.style.color = win ? "var(--success)" : "var(--danger)";
+        document.getElementById('f-desc').innerText = q.r + " " + q.d;
+        talk(t.innerText + ". " + q.r);
+    }
+
+    function nextQuestion() {
+        state.idx++;
+        if(state.idx < state.pool.length) renderQuestion();
+        else {
+            document.getElementById('scr-quiz').classList.add('hidden');
+            document.getElementById('scr-end').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${state.score}/10`;
+            talk("Treino concluído.");
+        }
+    }
+</script>
+</body>
+</html>
+
