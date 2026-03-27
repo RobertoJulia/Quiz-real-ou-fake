@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> Fake ou verdade | Treino de Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f3ff; 
+            --surface: #ffffff;
+            --primary: #7c3aed; 
+            --primary-hover: #6d28d9;
+            --text: #1e1b4b;
+            --text-light: #6b7280;
+            --success: #10b981;
+            --error: #ef4444;
+            --border: #e5e7eb;
+            --shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(at 0% 0%, #ede9fe 0, transparent 50%), 
+                radial-gradient(at 100% 100%, #fae8ff 0, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--surface);
+            border-radius: 40px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,1);
+            position: relative;
+            text-align: center;
+            animation: containerEntrance 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+        }
+
+        @keyframes containerEntrance {
+            from { opacity: 0; transform: scale(0.9) translateY(40px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 8px 15px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-main:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        .btn-main:active { transform: scale(0.98); }
+
+        .btn-outline { background: #f3f4f6; color: var(--text); border: 2px solid var(--border); }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid var(--border);
+            margin-bottom: 15px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .input-field:focus { border-color: var(--primary); }
+
+        .ranking-list {
+            margin-top: 20px;
+            text-align: left;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .progress-wrap {
+            width: 100%; height: 8px; background: #f3f4f6;
+            border-radius: 10px; margin-bottom: 30px; overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%; background: var(--primary);
+            width: 0%; transition: width 0.4s ease;
+        }
+
+        .level-card {
+            background: white; border: 2px solid var(--border);
+            padding: 20px; border-radius: 24px; cursor: pointer;
+            transition: 0.2s; margin-bottom: 12px; display: flex;
+            align-items: center; justify-content: space-between; text-align: left;
+        }
+
+        .level-card:hover { border-color: var(--primary); background: #fdfcff; }
+
+        .feedback-pop {
+            padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 2px solid transparent;
+            animation: pop 0.3s ease;
+        }
+
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .hidden { display: none !important; }
+        h1 { font-family: 'Space Grotesk'; font-size: 2.2rem; color: var(--primary); margin-bottom: 8px; }
+        .subtitle { color: var(--text-light); font-size: 0.95rem; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA 1: HOME -->
+        <div id="scr-home">
+            <div style="font-size: 50px; margin-bottom: 15px;">⚡</div>
+            <h1> Fake ou verdade</h1>
+            <p class="subtitle">Desafio de segurança digital. Treine sua mente para não cair em ciladas!</p>
+            <button class="btn btn-main" onclick="showLevels()">INICIAR TREINO ➔</button>
+            <button class="btn btn-outline" onclick="showRankingOnly()">VER RANKING</button>
+        </div>
+
+        <!-- TELA 2: NÍVEIS -->
+        <div id="scr-levels" class="hidden">
+            <h2 style="margin-bottom: 20px;">ESCOLHA O PESO</h2>
+            <div class="level-card" onclick="startLevel('teen')">
+                <div><strong>RECRUTA</strong><br><small>10-18 ANOS</small></div><span>🌱</span>
+            </div>
+            <div class="level-card" onclick="startLevel('adult')">
+                <div><strong>AGENTE</strong><br><small>19-35 ANOS</small></div><span>💪</span>
+            </div>
+            <div class="level-card" onclick="startLevel('senior')">
+                <div><strong>MESTRE</strong><br><small>36+ ANOS</small></div><span>🏆</span>
+            </div>
+            <button class="btn btn-outline" onclick="location.reload()">VOLTAR</button>
+        </div>
+
+        <!-- TELA 3: QUIZ -->
+        <div id="scr-quiz" class="hidden">
+            <div class="progress-wrap"><div class="progress-bar" id="p-bar"></div></div>
+            <div id="q-text" style="font-size: 1.1rem; font-weight: 700; min-height: 100px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center;"></div>
+            
+            <div id="q-actions">
+                <button class="btn btn-choice" style="background: var(--success); color: white;" onclick="verify(true)">VERDADEIRO</button>
+                <button class="btn btn-choice" style="background: var(--error); color: white;" onclick="verify(false)">FAKE</button>
+            </div>
+
+            <div id="q-feedback" class="hidden">
+                <div id="feedback-box" class="feedback-pop">
+                    <h3 id="f-title" style="margin-bottom: 5px;"></h3>
+                    <p id="f-desc" style="font-size: 0.85rem; font-weight: 600;"></p>
+                </div>
+                <button class="btn btn-main" onclick="nextQuestion()">PRÓXIMO ROUND ➔</button>
+            </div>
+        </div>
+
+        <!-- TELA 4: SALVAR NOME -->
+        <div id="scr-save" class="hidden">
+            <div style="font-size: 40px; margin-bottom: 10px;">🏅</div>
+            <h2>SÉRIE FINALIZADA</h2>
+            <p class="subtitle" id="save-msg"></p>
+            <input type="text" id="player-name" class="input-field" placeholder="Digite seu nome">
+            <button class="btn btn-main" onclick="saveScore()">SALVAR NO RANKING</button>
+        </div>
+
+        <!-- TELA 5: RANKING -->
+        <div id="scr-ranking" class="hidden">
+            <h2>RANKING DE ELITE</h2>
+            <div id="ranking-container" class="ranking-list"></div>
+            <button class="btn btn-main" style="margin-top: 20px;" onclick="location.reload()">VOLTAR AO INÍCIO</button>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS = {
+            teen: [
+                {q: "Senhas com nomes de pets são fáceis de hackear.", a: true, d: "Invasores usam listas de palavras comuns primeiro."},
+                {q: "O modo anônimo esconde seus dados do dono do Wi-Fi.", a: false, d: "O administrador da rede ainda monitora o tráfego."},
+                {q: "Baixar jogos piratas pode instalar vírus no PC ou celular.", a: true, d: "Arquivos 'crackeados' carregam malwares."},
+                {q: "Links de 'Robux Grátis' costumam ser golpes.", a: true, d: "Ninguém dá itens caros de graça em troca de cliques."},
+                {q: "A verificação em 2 etapas protege seu WhatsApp de clones.", a: true, d: "É a barreira extra que impede o roubo da conta."},
+                {q: "Se apagar uma foto da internet, ela some para sempre.", a: false, d: "Prints e backups mantêm a foto viva."},
+                {q: "Usar a mesma senha para tudo é seguro.", a: false, d: "Se uma conta vazar, todas as outras caem juntas."},
+                {q: "Qualquer pessoa com dados bobeando é um alvo.", a: true, d: "Hackers automatizam ataques para atingir qualquer um."},
+                {q: "Aceitar estranhos em jogos online é seguro.", a: false, d: "Podem ser perfis falsos coletando informações."},
+                {q: "Carregar celular em USBs públicas pode expor dados.", a: true, d: "USB transfere dados; prefira tomadas de energia."}
+            ],
+            adult: [
+                {q: "Bancos ligam pedindo sua senha por segurança.", a: false, d: "Bancos nunca pedem senhas por voz."},
+                {q: "O cadeado verde garante que o site é honesto.", a: false, d: "Garante apenas conexão criptografada."},
+                {q: "Postar foto da passagem aérea expõe dados.", a: true, d: "O código de barras tem seu perfil de passageiro."},
+                {q: "Salvar senhas no navegador é 100% seguro.", a: false, d: "Acesso físico ao PC permite ver as senhas."},
+                {q: "Biometria é mais segura que PIN simples.", a: true, d: "Digitais são exclusivas e complexas."},
+                {q: "Wi-Fi de aeroporto é seguro para bancos.", a: false, d: "Redes abertas facilitam roubo de dados."},
+                {q: "PDFs podem esconder vírus.", a: true, d: "Scripts maliciosos rodam em documentos."},
+                {q: "Antivírus grátis oferece proteção total.", a: false, d: "Oferece o básico, não contra ameaças de elite."},
+                {q: "O 'Encontrar meu Dispositivo' ajuda na segurança.", a: true, d: "Permite apagar dados remotamente."},
+                {q: "VPNs criam túnel criptografado para dados.", a: true, d: "Protege sua navegação em redes abertas."}
+            ],
+            senior: [
+                {q: "Banco manda motoboy buscar cartão na sua casa.", a: false, d: "Isso é golpe! Bancos não retiram cartões."},
+                {q: "Parente pedindo dinheiro: confirme por vídeo.", a: true, d: "Videochamada evita golpe do perfil clonado."},
+                {q: "E-mails da Receita pedindo cliques são reais.", a: false, d: "Órgãos oficiais não mandam links assim."},
+                {q: "Promoções incríveis no Zap são quase sempre golpes.", a: true, d: "São iscas para roubar dados."},
+                {q: "Celular sem senha facilita acesso ladrões ao banco.", a: true, d: "A senha de tela é o seu escudo primário."},
+                {q: "Atualizar o celular corrige falhas de segurança.", a: true, d: "Mantenha o sistema sempre atualizado."},
+                {q: "SMS dizendo conta bloqueada é suspeito.", a: true, d: "É 'smishing' tentando roubar logins."},
+                {q: "Anotar senhas no monitor é seguro.", a: false, d: "Segurança física é essencial."},
+                {q: "Compre apenas em sites conhecidos.", a: true, d: "Sites fakes clonam cartões."},
+                {q: "Compartilhar correntes pode espalhar vírus.", a: true, d: "Links em correntes costumam ser maliciosos."}
+            ]
+        };
+
+        let state = { score: 0, idx: 0, pool: [], levelName: "" };
+
+        function showLevels() {
+            document.getElementById('scr-home').classList.add('hidden');
+            document.getElementById('scr-levels').classList.remove('hidden');
+        }
+
+        function startLevel(lvl) {
+            state.levelName = lvl.toUpperCase();
+            state.pool = [...QUESTIONS[lvl]].sort(() => Math.random() - 0.5);
+            state.idx = 0; 
+            state.score = 0;
+            document.getElementById('scr-levels').classList.add('hidden');
+            document.getElementById('scr-quiz').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = state.pool[state.idx];
+            document.getElementById('p-bar').style.width = `${(state.idx / state.pool.length) * 100}%`;
+            document.getElementById('q-text').innerText = q.q;
+            document.getElementById('q-actions').classList.remove('hidden');
+            document.getElementById('q-feedback').classList.add('hidden');
+        }
+
+        function verify(val) {
+            const q = state.pool[state.idx];
+            const win = val === q.a;
+            if(win) state.score++;
+            
+            document.getElementById('q-actions').classList.add('hidden');
+            const fWrap = document.getElementById('q-feedback');
+            const fBox = document.getElementById('feedback-box');
+            fWrap.classList.remove('hidden');
+            document.getElementById('f-title').innerText = win ? "BOA TÉCNICA! ✅" : "PONTO FRACO! ❌";
+            fBox.style.background = win ? "#f0fdf4" : "#fef2f2";
+            fBox.style.color = win ? "#166534" : "#991b1b";
+            fBox.style.borderColor = win ? "#22c55e" : "#ef4444";
+            document.getElementById('f-desc').innerText = q.d;
+        }
+
+        function nextQuestion() {
+            state.idx++;
+            if(state.idx < state.pool.length) {
+                renderQuestion();
+            } else {
+                showSaveScreen();
+            }
+        }
+
+        function showSaveScreen() {
+            document.getElementById('scr-quiz').classList.add('hidden');
+            document.getElementById('scr-save').classList.remove('hidden');
+            document.getElementById('save-msg').innerText = `Você acertou ${state.score} de 10 na categoria ${state.levelName}.`;
+        }
+
+        function saveScore() {
+            const name = document.getElementById('player-name').value.trim() || "Atleta Anônimo";
+            const ranking = JSON.parse(localStorage.getItem('cyber_ranking') || '[]');
+            ranking.push({ name, score: state.score, level: state.levelName, date: new Date().toLocaleDateString() });
+            ranking.sort((a, b) => b.score - a.score);
+            localStorage.setItem('cyber_ranking', JSON.stringify(ranking.slice(0, 10))); // Top 10
+            showRanking();
+        }
+
+        function showRanking() {
+            document.getElementById('scr-save').classList.add('hidden');
+            document.getElementById('scr-home').classList.add('hidden');
+            document.getElementById('scr-ranking').classList.remove('hidden');
+            const container = document.getElementById('ranking-container');
+            const ranking = JSON.parse(localStorage.getItem('cyber_ranking') || '[]');
+            
+            if(ranking.length === 0) {
+                container.innerHTML = "<p style='text-align:center'>Nenhum recorde ainda.</p>";
+            } else {
+                container.innerHTML = ranking.map((r, i) => `
+                    <div class="ranking-item">
+                        <span><strong>${i+1}º</strong> ${r.name} (${r.level})</span>
+                        <span><strong>${r.score}/10</strong></span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showRankingOnly() {
+            document.getElementById('scr-home').classList.add('hidden');
+            showRanking();
+        }
+    </script>
+</body>
+</html>
+
