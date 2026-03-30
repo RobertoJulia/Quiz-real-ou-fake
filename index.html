@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento de Segurança Digital | Fato ou Fake</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand: #1e293b;
+            --accent: #6366f1; 
+            --bg: #f3f0ff;    /* Lilás Claro solicitado */
+            --surface: #ffffff;
+            --success: #16a34a;
+            --error: #dc2626;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-multiplier: 1;
+        }
+
+        body.protanopia .btn-v { background: #0052cc !important; }
+        body.protanopia .btn-f { background: #e6b800 !important; }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            padding: 20px;
+            font-size: calc(16px * var(--font-multiplier));
+        }
+
+        .container {
+            width: 100%; max-width: 550px;
+            background: var(--surface);
+            border-radius: 20px; padding: 40px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            position: relative;
+            min-height: 450px;
+        }
+
+        .view { animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loader-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--surface); border-radius: 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 100;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #f1f5f9;
+            border-top: 4px solid var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 16px;
+        }
+
+        h1 { font-weight: 800; color: var(--brand); font-size: 2rem; margin-bottom: 8px; }
+        h2 { font-size: 1.4rem; margin-bottom: 20px; color: var(--brand); }
+        p { line-height: 1.6; color: var(--text-muted); }
+
+        .image-container {
+            width: 100%; height: 220px; background-color: #f1f5f9; border-radius: 12px;
+            margin-bottom: 24px; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border: 1px solid #e2e8f0;
+        }
+        .image-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .btn {
+            width: 100%; padding: 14px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; 
+            font-size: 1rem; transition: var(--transition); display: flex; align-items: center; justify-content: center;
+        }
+        .btn-primary { background: var(--accent); color: white; margin-top: 10px; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .config-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 0; border-bottom: 1px solid #f1f5f9; text-align: left;
+        }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        select { padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; }
+
+        .card-select {
+            border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 12px;
+            cursor: pointer; display: flex; align-items: center; gap: 15px; transition: var(--transition); text-align: left;
+        }
+        .card-select:hover { border-color: var(--accent); background: #f5f3ff; }
+
+        .progress-bar { width: 100%; height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 30px; }
+        .progress-fill { height: 100%; background: var(--accent); transition: width 0.6s ease; border-radius: 10px; }
+        .grid-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-check { padding: 18px; border: none; border-radius: 10px; font-weight: 700; color: white; cursor: pointer; }
+        .btn-v { background: var(--success); }
+        .btn-f { background: var(--error); }
+
+        .feedback-box {
+            margin-top: 20px; padding: 24px; border-radius: 12px; text-align: left;
+            border-left: 5px solid transparent; animation: slideIn 0.3s ease;
+        }
+        .correct { background: #f0fdf4; border-left-color: var(--success); color: #14532d; }
+        .incorrect { background: #fef2f2; border-left-color: var(--error); color: #7f1d1d; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- LOADING OVERLAY -->
+        <div id="loader" class="loader-overlay hidden">
+            <div class="spinner"></div>
+            <p>Ativando Protocolos de Voz...</p>
+        </div>
+
+        <!-- 1. TELA INICIAL -->
+        <div id="view-intro" class="view">
+            <h1>Fato ou Fake</h1>
+            <p>Treinamento de Defesa Cognitiva</p>
+            <div style="background: #f1f5f9; border-radius: 12px; padding: 20px; margin: 24px 0; text-align: left;">
+                <p><strong>Missão:</strong> Este portal treina sua percepção contra ataques digitais. Identifique as ameaças para proteger sua integridade online.</p>
+            </div>
+            <button class="btn btn-primary" onclick="show('view-config')">INICIAR TREINO 🦾</button>
+        </div>
+
+        <!-- 2. CONFIGURAÇÕES -->
+        <div id="view-config" class="view hidden">
+            <h2>Configurações</h2>
+            <div class="config-item">
+                <span>Leitura por Voz</span>
+                <label class="switch">
+                    <input type="checkbox" id="voice-opt">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="config-item">
+                <span>Texto Grande</span>
+                <label class="switch">
+                    <input type="checkbox" id="text-opt" onchange="updateText()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="config-item">
+                <span>Daltônico?</span>
+                <select id="color-opt" onchange="updateColors()">
+                    <option value="none">Não</option>
+                    <option value="protanopia">Sim (Protanopia)</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="show('view-levels')" style="margin-top: 20px;">CONFIRMAR</button>
+        </div>
+
+        <!-- 3. SELEÇÃO -->
+        <div id="view-levels" class="view hidden">
+            <h2>Selecione o Alvo</h2>
+            <div class="card-select" onclick="prepareQuiz('jovem')">👦 Jovem (IA, Deepfakes e Games)</div>
+            <div class="card-select" onclick="prepareQuiz('adulto')">👨 Adulto (Bancos, Pix e Trabalho)</div>
+            <div class="card-select" onclick="prepareQuiz('idoso')">👴 Idoso (WhatsApp e Benefícios)</div>
+        </div>
+
+        <!-- 4. QUIZ -->
+        <div id="view-quiz" class="view hidden">
+            <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+            <div class="image-container" id="q-image"></div>
+            <p id="q-text" style="font-weight: 600; margin-bottom: 25px;"></p>
+            <div id="quiz-actions" class="grid-answers">
+                <button class="btn-check btn-v" onclick="check(true)">VERDADEIRO</button>
+                <button class="btn-check btn-f" onclick="check(false)">FALSO</button>
+            </div>
+            <div id="feedback-area" class="hidden">
+                <div id="feedback-msg" class="feedback-box"></div>
+                <button class="btn btn-primary" style="margin-top: 24px" onclick="next()">PRÓXIMO ➔</button>
+            </div>
+        </div>
+
+        <!-- 5. FIM -->
+        <div id="view-result" class="view hidden">
+            <h2>Resultado Final</h2>
+            <h1 id="final-score" style="font-size: 4rem; text-align: center; color: var(--accent);">0</h1>
+            <button class="btn btn-primary" onclick="location.reload()">REINICIAR MÓDULO</button>
+        </div>
+    </div>
+
+    <script>
+        const DB = {
+            jovem: [
+                {q: "IAs podem clonar vozes de conhecidos em segundos para pedir dinheiro via áudio.", a: true, img: "https://images.unsplash.com/photo-1589254065878-42c9da997008?w=500", e: "A clonagem de voz por IA é uma realidade e é usada para golpes de extorsão."},
+                {q: "Deepfakes de vídeo podem ser gerados em tempo real durante chamadas de vídeo.", a: true, img: "https://images.unsplash.com/photo-1633412802994-5c058f151b66?w=500", e: "Softwares modernos permitem trocar o rosto do falante instantaneamente em reuniões online."},
+                {q: "Selo de verificado em redes sociais garante que a notícia postada é 100% real.", a: false, img: "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500", e: "Selos podem ser comprados ou perfis hackeados para espalhar Fake News."},
+                {q: "IAs de imagem ainda têm dificuldade em desenhar mãos perfeitas.", a: true, img: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=500", e: "Erros anatômicos em dedos são pistas comuns de que uma imagem foi gerada por IA."}
+            ],
+            adulto: [
+                {q: "Bancos solicitam confirmação de senha ou token por telefone em chamadas recebidas.", a: false, img: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=500", e: "Bancos nunca pedem credenciais por voz. Se ligarem pedindo, é golpe."},
+                {q: "Transferências Pix não podem ser canceladas pelo usuário após a confirmação.", a: true, img: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=500", e: "Uma vez enviado, o dinheiro cai na hora e o estorno é um processo burocrático complexo."},
+                {q: "O Banco Central envia SMS com links para resgate de 'valores esquecidos'.", a: false, img: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=500", e: "A consulta deve ser feita apenas pelo portal oficial do Banco Central."},
+                {q: "E-mails da Receita Federal com links para baixar multas são seguros.", a: false, img: "https://images.unsplash.com/photo-1633265486231-2298a241d354?w=500", e: "Links em e-mails governamentais são iscas clássicas de vírus (malware)."}
+            ],
+            idoso: [
+                {q: "Se um parente pede dinheiro por WhatsApp de um número novo, você deve ligar para confirmar.", a: true, img: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=500", e: "Sempre confirme a identidade por voz ou vídeo antes de qualquer transferência."},
+                {q: "O INSS solicita sua senha bancária por telefone para realizar a prova de vida.", a: false, img: "https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?w=500", e: "O INSS nunca pede senhas. A prova de vida é feita por canais oficiais ou biometria."}
+            ]
+        };
+
+        let state = { score: 0, index: 0, pool: [] };
+
+        function show(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function updateText() {
+            document.documentElement.style.setProperty('--font-multiplier', document.getElementById('text-opt').checked ? '1.2' : '1');
+        }
+
+        function updateColors() {
+            document.body.className = document.getElementById('color-opt').value;
+        }
+
+        function prepareQuiz(type) {
+            document.getElementById('loader').classList.remove('hidden');
+            state = { score: 0, index: 0, pool: DB[type] };
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                show('view-quiz');
+                render();
+            }, 1500);
+        }
+
+        function render() {
+            const q = state.pool[state.index];
+            document.getElementById('fill').style.width = `${(state.index / state.pool.length) * 100}%`;
+            document.getElementById('q-text').innerText = q.q;
+            document.getElementById('q-image').innerHTML = `<img src="${q.img}" alt="Contexto">`;
+            document.getElementById('quiz-actions').classList.remove('hidden');
+            document.getElementById('feedback-area').classList.add('hidden');
+            if(document.getElementById('voice-opt').checked) speak(q.q);
+        }
+
+        function check(val) {
+            const q = state.pool[state.index];
+            const ok = (val === q.a);
+            if(ok) state.score += 25;
+            const msg = document.getElementById('feedback-msg');
+            msg.className = `feedback-box ${ok ? 'correct' : 'incorrect'}`;
+            msg.innerHTML = `<strong>${ok ? 'ACERTOU!' : 'ERROU!'}</strong><p>${q.e}</p>`;
+            document.getElementById('quiz-actions').classList.add('hidden');
+            document.getElementById('feedback-area').classList.remove('hidden');
+            if(document.getElementById('voice-opt').checked) speak((ok ? "Acertou. " : "Errou. ") + q.e);
+        }
+
+        function speak(t) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(t);
+            u.lang = 'pt-BR';
+            window.speechSynthesis.speak(u);
+        }
+
+        function next() {
+            state.index++;
+            if(state.index < state.pool.length) render();
+            else {
+                document.getElementById('final-score').innerText = state.score;
+                show('view-result');
+                if(document.getElementById('voice-opt').checked) speak("Treinamento finalizado. Sua pontuação foi " + state.score);
+            }
+        }
+    </script>
+</body>
+</html>
+
