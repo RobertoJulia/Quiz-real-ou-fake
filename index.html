@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CaíNão — Você seria enganado?</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────── */
+:root{
+  --red:#FF2D2D;--red-glow:rgba(255,45,45,.25);
+  --dark:#090910;--dark2:#0F0F1A;--dark3:#161625;
+  --card:#13131E;--border:#1F1F35;--border2:#2A2A45;
+  --white:#FFFFFF;--off:#E2E2F0;--muted:#6060A0;--muted2:#4A4A7A;
+  --green:#00E87A;--yellow:#FFD400;--blue:#4B8EFF;--orange:#FF7A2D;
+  --h:'Syne',sans-serif;
+  --b:'Plus Jakarta Sans',sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--b);background:var(--dark);color:var(--white);overflow-x:hidden;font-size:16px;}
+::selection{background:var(--red);color:#fff;}
+img{display:block;}
+
+/* ─────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px var(--red-glow)}50%{box-shadow:0 0 50px rgba(255,45,45,.5)}}
+@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes countDown{from{stroke-dashoffset:0}to{stroke-dashoffset:126}}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes typingDot{0%,80%,100%{transform:scale(0);opacity:.3}40%{transform:scale(1);opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pixPop{0%{transform:scale(.8) translateY(10px);opacity:0}60%{transform:scale(1.05) translateY(-5px)}100%{transform:scale(1) translateY(0);opacity:1}}
+@keyframes numberRoll{0%{transform:translateY(20px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes borderPulse{0%,100%{border-color:rgba(255,45,45,.3)}50%{border-color:rgba(255,45,45,.9)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.page{animation:fadeUp .45s var(--ease);}
+.hidden{display:none!important;}
+
+/* ─────────────────────────────────────
+   TICKER
+───────────────────────────────────── */
+.ticker{background:var(--red);padding:8px 0;overflow:hidden;white-space:nowrap;flex-shrink:0;}
+.ticker-inner{display:inline-flex;animation:ticker 28s linear infinite;}
+.t-item{font-family:var(--h);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:0 28px;color:#fff;}
+.t-dot{color:rgba(255,255,255,.4);}
+
+/* ─────────────────────────────────────
+   LANDING PAGE
+───────────────────────────────────── */
+#pg-land{display:flex;flex-direction:column;min-height:100vh;}
+
+/* NAV */
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 24px;
+  position:sticky;top:0;z-index:100;
+  background:rgba(9,9,16,.9);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.logo{font-family:var(--h);font-size:1.5rem;font-weight:900;letter-spacing:-1px;}
+.logo em{color:var(--red);font-style:normal;}
+.nav-pill{
+  background:rgba(255,45,45,.12);
+  border:1px solid rgba(255,45,45,.25);
+  color:var(--red);
+  padding:5px 12px;
+  border-radius:100px;
+  font-size:.68rem;
+  font-weight:700;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
+
+/* HERO */
+.hero{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+  padding:52px 22px 40px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 90% 60% at 50% -5%,rgba(255,45,45,.15) 0%,transparent 65%),
+             radial-gradient(ellipse 50% 50% at 85% 85%,rgba(75,142,255,.06) 0%,transparent 55%);
+  pointer-events:none;
+}
+/* FLOATING EMOJIS */
+.float-emojis{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.fe{position:absolute;font-size:1.8rem;animation:float 4s ease-in-out infinite;opacity:.12;}
+.fe:nth-child(1){left:5%;top:15%;animation-delay:0s;}
+.fe:nth-child(2){right:8%;top:20%;animation-delay:1.2s;}
+.fe:nth-child(3){left:12%;top:55%;animation-delay:.6s;}
+.fe:nth-child(4){right:6%;top:60%;animation-delay:1.8s;}
+.fe:nth-child(5){left:50%;top:10%;animation-delay:.3s;}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,45,45,.1);border:1px solid rgba(255,45,45,.22);
+  color:#FF6B6B;padding:7px 15px;border-radius:100px;
+  font-size:.75rem;font-weight:700;
+  margin-bottom:26px;
+  animation:fadeIn .6s ease;
+}
+.hero-eyebrow .live-dot{width:7px;height:7px;background:var(--red);border-radius:50%;animation:pulse .8s infinite;}
+
+.hero-title{
+  font-family:var(--h);
+  font-size:clamp(3rem,12vw,6rem);
+  font-weight:900;
+  line-height:.9;
+  letter-spacing:-3px;
+  margin-bottom:18px;
+  animation:fadeUp .6s var(--ease) .1s both;
+}
+.hero-title .outline{
+  -webkit-text-stroke:2.5px var(--red);
+  color:transparent;
+}
+/* ANIMATED WORD SWAP */
+.hero-subtitle{
+  font-size:clamp(.95rem,3vw,1.15rem);
+  color:var(--muted);
+  line-height:1.7;
+  max-width:460px;
+  margin-bottom:32px;
+  animation:fadeUp .6s var(--ease) .2s both;
+}
+.hero-subtitle strong{color:var(--off);}
+
+/* BIG STAT CARD */
+.big-stat{
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  padding:20px 24px;
+  margin-bottom:28px;
+  max-width:400px;
+  width:100%;
+  animation:fadeUp .6s var(--ease) .3s both;
+  position:relative;
+  overflow:hidden;
+}
+.big-stat::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,45,45,.06),transparent);
+  pointer-events:none;
+}
+.big-stat-num{
+  font-family:var(--h);
+  font-size:3.5rem;
+  font-weight:900;
+  color:var(--red);
+  line-height:1;
+  display:block;
+  animation:glow 2.5s ease infinite;
+}
+.big-stat-label{font-size:.88rem;color:var(--muted);margin-top:4px;line-height:1.5;}
+.big-stat-source{font-size:.68rem;color:var(--muted2);margin-top:8px;opacity:.7;}
+
+/* MINI STATS */
+.mini-stats{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+  max-width:420px;width:100%;
+  margin-bottom:32px;
+  animation:fadeUp .6s var(--ease) .35s both;
+}
+.ms{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:10px 14px;flex:1;min-width:80px;text-align:center;
+}
+.ms-num{font-family:var(--h);font-size:1.2rem;font-weight:900;color:var(--off);display:block;line-height:1;}
+.ms-txt{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;line-height:1.3;}
+
+/* CTA */
+.cta-wrap{
+  display:flex;flex-direction:column;gap:10px;
+  width:100%;max-width:380px;
+  animation:fadeUp .6s var(--ease) .4s both;
+}
+.btn-cta{
+  padding:18px 28px;
+  background:var(--red);
+  color:white;
+  border:none;border-radius:15px;
+  font-family:var(--h);font-size:1.05rem;font-weight:800;
+  cursor:pointer;transition:all .3s var(--ease);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  animation:glow 2.5s ease infinite;
+  letter-spacing:.3px;
+}
+.btn-cta:hover{transform:translateY(-3px) scale(1.02);filter:brightness(1.1);}
+.btn-cta:active{transform:scale(.97);}
+.btn-outline{
+  padding:14px 28px;
+  background:transparent;color:var(--off);
+  border:1.5px solid var(--border2);
+  border-radius:15px;font-family:var(--h);font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:all .3s ease;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04);}
+
+.trust-line{
+  margin-top:20px;font-size:.75rem;color:var(--muted2);
+  animation:fadeUp .6s var(--ease) .5s both;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+}
+.trust-line .lock{font-size:.9rem;}
+
+/* HOW IT WORKS */
+.section{padding:44px 22px;border-top:1px solid var(--border);}
+.sec-label{font-size:.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--red);text-align:center;margin-bottom:10px;}
+.sec-title{font-family:var(--h);font-size:clamp(1.7rem,5vw,2.5rem);font-weight:900;letter-spacing:-1.5px;text-align:center;line-height:1.05;margin-bottom:28px;}
+.sec-title span{color:var(--red);}
+
+.steps{display:flex;flex-direction:column;gap:12px;max-width:460px;margin:0 auto;}
+.step{
+  display:flex;align-items:flex-start;gap:14px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:18px;
+  transition:border-color .3s ease;
+}
+.step:hover{border-color:rgba(255,45,45,.3);}
+.step-n{
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  background:rgba(255,45,45,.1);border:1px solid rgba(255,45,45,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--h);font-weight:900;font-size:.95rem;color:var(--red);
+}
+.step-body strong{display:block;color:var(--white);font-weight:700;font-size:.93rem;margin-bottom:3px;}
+.step-body p{font-size:.8rem;color:var(--muted);line-height:1.55;}
+
+/* INNOVATION BLOCK */
+.innovation{
+  background:var(--dark2);
+  padding:40px 22px;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.inno-card{
+  max-width:460px;margin:0 auto;
+  background:linear-gradient(135deg,rgba(255,45,45,.08),rgba(75,142,255,.05));
+  border:1px solid rgba(255,45,45,.2);
+  border-radius:20px;padding:24px;
+  position:relative;overflow:hidden;
+  animation:borderPulse 3s ease infinite;
+}
+.inno-card::before{content:'EXCLUSIVO';position:absolute;top:14px;right:-20px;background:var(--red);color:white;font-size:.55rem;font-weight:900;padding:4px 28px;transform:rotate(45deg);letter-spacing:1px;}
+.inno-icon{font-size:2.5rem;margin-bottom:12px;display:block;animation:float 3s ease-in-out infinite;}
+.inno-title{font-family:var(--h);font-size:1.3rem;font-weight:900;margin-bottom:8px;letter-spacing:-.5px;}
+.inno-title span{color:var(--red);}
+.inno-desc{font-size:.85rem;color:var(--muted);line-height:1.65;}
+.inno-desc strong{color:var(--off);}
+.inno-feature{
+  display:flex;align-items:center;gap:8px;
+  margin-top:10px;font-size:.8rem;color:var(--off);
+}
+.inno-feature::before{content:'→';color:var(--red);font-weight:900;}
+
+/* SOURCES */
+.sources-sec{padding:32px 22px;border-top:1px solid var(--border);}
+.sources-chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:480px;margin:0 auto;}
+.s-chip{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:8px;padding:6px 12px;
+  font-size:.68rem;font-weight:600;color:var(--muted);
+  display:flex;align-items:center;gap:5px;
+}
+.s-chip::before{content:'📎';font-size:.6rem;}
+
+/* FOOTER */
+footer{
+  padding:24px 22px;border-top:1px solid var(--border);
+  text-align:center;
+}
+footer p{font-size:.7rem;color:var(--muted2);line-height:1.9;}
+footer a{color:#FF6B6B;text-decoration:none;}
+
+/* ─────────────────────────────────────
+   INNER PAGES (shared shell)
+───────────────────────────────────── */
+.inner{
+  display:flex;justify-content:center;align-items:flex-start;
+  min-height:100vh;padding:22px 18px;
+  background:var(--dark);
+}
+.box{
+  width:100%;max-width:500px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;padding:30px 26px;
+  position:relative;
+}
+.box-loader{
+  position:absolute;inset:0;background:var(--card);border-radius:22px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;
+}
+.spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.08);border-top:3px solid var(--red);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:12px;}
+.box h2{font-family:var(--h);font-size:1.35rem;font-weight:900;margin-bottom:16px;letter-spacing:-.5px;line-height:1.2;}
+
+/* BUTTONS inner */
+.btn{
+  width:100%;padding:14px 18px;border-radius:12px;
+  font-weight:700;cursor:pointer;border:none;
+  font-size:.93rem;transition:all .3s var(--ease);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--b);margin-top:9px;
+}
+.btn-red{background:var(--red);color:white;box-shadow:0 4px 16px var(--red-glow);}
+.btn-red:hover{opacity:.9;transform:translateY(-2px);}
+.btn-ghost{background:rgba(255,255,255,.04);color:var(--off);border:1.5px solid var(--border2);}
+.btn-ghost:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07);}
+.btn-green{background:var(--green);color:#000;box-shadow:0 4px 14px rgba(0,232,122,.2);}
+.btn-green:hover{opacity:.92;transform:translateY(-2px);}
+.btn-wa{background:#25D366;color:white;}
+.btn-wa:hover{opacity:.9;transform:translateY(-2px);}
+
+/* CONFIG */
+.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.cfg-row span{font-size:.88rem;color:var(--off);}
+.sw{position:relative;display:inline-block;width:42px;height:23px;}
+.sw input{opacity:0;width:0;height:0;}
+.sl{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.1);transition:.35s;border-radius:34px;}
+.sl:before{position:absolute;content:"";height:17px;width:17px;left:3px;bottom:3px;background:white;transition:.35s;border-radius:50%;}
+input:checked+.sl{background:var(--red);}
+input:checked+.sl:before{transform:translateX(19px);}
+select{padding:7px 11px;border-radius:8px;border:1px solid var(--border2);background:var(--dark3);color:var(--off);font-size:.82rem;font-family:var(--b);}
+
+/* MODE CARDS */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:16px 0;}
+.mc{
+  border:2px solid var(--border2);border-radius:15px;padding:20px 14px;
+  cursor:pointer;text-align:center;transition:all .3s var(--ease);
+  background:rgba(255,255,255,.02);position:relative;overflow:hidden;
+}
+.mc:hover{border-color:rgba(255,45,45,.5);background:rgba(255,45,45,.05);transform:translateY(-3px);}
+.mc.hot{border-color:rgba(255,45,45,.4);background:linear-gradient(135deg,rgba(255,45,45,.08),rgba(255,45,45,.02));}
+.mc .new{position:absolute;top:8px;right:-16px;background:var(--red);color:white;font-size:.52rem;font-weight:900;padding:3px 20px;transform:rotate(45deg);letter-spacing:1px;}
+.mc-icon{font-size:2.2rem;margin-bottom:8px;display:block;}
+.mc-name{font-family:var(--h);font-weight:800;font-size:.88rem;display:block;color:var(--white);}
+.mc-sub{font-size:.7rem;color:var(--muted);margin-top:3px;line-height:1.35;}
+
+/* PROFILE CARDS */
+.pc{
+  border:1.5px solid var(--border2);border-radius:13px;padding:15px 17px;margin-bottom:9px;
+  cursor:pointer;display:flex;align-items:center;gap:13px;transition:all .3s var(--ease);
+  background:rgba(255,255,255,.02);
+}
+.pc:hover{border-color:rgba(255,45,45,.45);background:rgba(255,45,45,.04);transform:translateX(5px);}
+.pc-em{font-size:1.7rem;}
+.pc-info strong{display:block;font-size:.9rem;color:var(--white);font-weight:700;}
+.pc-info span{font-size:.74rem;color:var(--muted);line-height:1.4;}
+.pc-badge{margin-left:auto;background:rgba(255,255,255,.06);color:var(--muted);font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:100px;white-space:nowrap;}
+.pc-badge.hot{background:rgba(255,45,45,.12);color:#FF7B7B;}
+
+/* WARNING BOX */
+.warn-box{background:rgba(255,45,45,.07);border:1px solid rgba(255,45,45,.22);border-radius:11px;padding:11px 14px;margin:11px 0;font-size:.77rem;color:#FFAAAA;line-height:1.55;}
+
+/* ─────────────────────────────────────
+   QUIZ
+───────────────────────────────────── */
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.pl{font-size:.72rem;font-weight:700;color:var(--muted);}
+.pb{width:100%;height:5px;background:rgba(255,255,255,.07);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.pf{height:100%;background:linear-gradient(90deg,var(--red),#FF6B6B);transition:width .6s var(--ease);border-radius:10px;}
+.tw{display:flex;justify-content:flex-end;margin-bottom:11px;}
+.tc{position:relative;width:46px;height:46px;}
+.tc svg{transform:rotate(-90deg);}
+.ttrack{fill:none;stroke:rgba(255,255,255,.06);stroke-width:4;}
+.tfill{fill:none;stroke:var(--red);stroke-width:4;stroke-dasharray:126;stroke-dashoffset:0;stroke-linecap:round;transition:stroke .3s;}
+.tfill.danger{stroke:#FF6B6B;}
+.tnum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:800;color:var(--off);}
+.tnum.danger{color:#FF6B6B;animation:pulse .5s infinite;}
+.q-img{width:100%;height:175px;background:var(--dark3);border-radius:13px;margin-bottom:15px;overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+.q-img img{width:100%;height:100%;object-fit:cover;}
+.q-txt{font-weight:700;font-size:.95rem;margin-bottom:16px;color:var(--off);line-height:1.6;}
+.q-source{font-size:.65rem;color:var(--muted2);margin-bottom:16px;margin-top:-10px;font-style:italic;}
+.ans-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.ans-btn{
+  padding:15px;border:none;border-radius:12px;font-weight:800;color:white;cursor:pointer;
+  font-size:.88rem;transition:all .3s var(--ease);
+  display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--b);
+}
+.ans-btn:hover{transform:translateY(-2px);filter:brightness(1.1);}
+.ans-btn:active{transform:scale(.96);}
+.btn-sim{background:linear-gradient(135deg,var(--green),#00B85C);}
+.btn-nao{background:linear-gradient(135deg,var(--red),#CC0000);}
+/* FEEDBACK */
+.fb{margin-top:14px;padding:15px 17px;border-radius:13px;border-left:4px solid;animation:fadeUp .3s ease;}
+.fb-ok{background:rgba(0,232,122,.07);border-left-color:var(--green);}
+.fb-ko{background:rgba(255,45,45,.07);border-left-color:var(--red);}
+.fb-to{background:rgba(255,212,0,.07);border-left-color:var(--yellow);}
+.fb strong{font-size:.88rem;display:block;margin-bottom:3px;color:var(--white);}
+.fb p{font-size:.8rem;color:var(--muted);line-height:1.55;}
+.fb .fb-src{font-size:.65rem;color:var(--muted2);margin-top:6px;font-style:italic;}
+.streak-b{display:inline-flex;align-items:center;gap:5px;background:rgba(255,212,0,.1);color:var(--yellow);border:1px solid rgba(255,212,0,.2);padding:3px 9px;border-radius:100px;font-size:.7rem;font-weight:700;}
+
+/* ─────────────────────────────────────
+   PIX LOSS ANIMATION (UNIQUE FEATURE)
+───────────────────────────────────── */
+.pix-overlay{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(9,9,16,.97);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  animation:fadeIn .3s ease;
+}
+.pix-phone{
+  width:240px;
+  background:#1a1a2e;
+  border-radius:24px;
+  overflow:hidden;
+  border:3px solid #2d2d44;
+  box-shadow:0 0 60px rgba(255,45,45,.3);
+  animation:pixPop .5s var(--ease);
+}
+.pix-topbar{background:#111827;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.pix-appname{font-size:.75rem;color:#9ca3af;font-weight:700;}
+.pix-body{padding:20px;text-align:center;}
+.pix-app-icon{font-size:2rem;margin-bottom:8px;}
+.pix-title{font-size:.75rem;color:#9ca3af;margin-bottom:4px;}
+.pix-amount{
+  font-family:var(--h);font-size:2.4rem;font-weight:900;color:var(--red);
+  animation:numberRoll .6s var(--ease) .2s both;
+  display:block;
+}
+.pix-label{font-size:.7rem;color:#6b7280;margin-top:4px;}
+.pix-status{
+  margin-top:14px;background:rgba(255,45,45,.15);border-radius:10px;
+  padding:10px;font-size:.75rem;color:#fca5a5;line-height:1.5;
+  animation:fadeUp .4s ease .4s both;
+}
+.pix-learn{
+  margin-top:20px;padding:0 20px 20px;
+  font-size:.8rem;color:var(--muted);text-align:center;
+  animation:fadeUp .4s ease .6s both;
+  line-height:1.6;
+}
+.pix-learn strong{color:var(--off);}
+.pix-btn{
+  margin:0 20px 20px;width:calc(100% - 40px);
+  padding:13px;background:var(--red);color:white;
+  border:none;border-radius:11px;font-family:var(--h);font-weight:800;
+  font-size:.88rem;cursor:pointer;
+  animation:fadeUp .4s ease .8s both;
+}
+
+/* ─────────────────────────────────────
+   RESULT
+───────────────────────────────────── */
+.r-center{text-align:center;padding:14px 0 12px;}
+.r-medal{font-size:3.5rem;display:block;animation:pop .5s ease;}
+.r-score{font-family:var(--h);font-size:4.2rem;font-weight:900;color:var(--red);line-height:1;display:block;animation:pop .5s ease .1s both;}
+.r-lbl{font-size:.82rem;color:var(--muted);margin-top:3px;}
+.r-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:13px 0;}
+.r-st{background:var(--dark3);border-radius:11px;padding:12px 6px;text-align:center;border:1px solid var(--border);}
+.r-st .rv{font-family:var(--h);font-size:1.4rem;font-weight:900;color:var(--white);display:block;}
+.r-st .rk{font-size:.62rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.r-lvl{background:linear-gradient(135deg,rgba(255,45,45,.1),rgba(255,45,45,.04));border:1px solid rgba(255,45,45,.2);border-radius:13px;padding:14px 16px;margin:12px 0;text-align:center;}
+.r-lvl-t{font-family:var(--h);font-weight:900;font-size:1.1rem;color:var(--red);}
+.r-lvl-d{font-size:.78rem;color:var(--muted);margin-top:4px;line-height:1.5;}
+/* CHALLENGE CARD */
+.challenge-card{
+  background:linear-gradient(135deg,rgba(0,232,122,.08),rgba(0,232,122,.03));
+  border:1.5px solid rgba(0,232,122,.2);
+  border-radius:14px;padding:16px;margin:12px 0;
+  text-align:center;
+}
+.challenge-card h3{font-family:var(--h);font-size:1rem;font-weight:900;color:var(--green);margin-bottom:5px;}
+.challenge-card p{font-size:.78rem;color:var(--muted);line-height:1.5;}
+
+/* ─────────────────────────────────────
+   SIMULATION FULLSCREEN
+───────────────────────────────────── */
+#sim-screen{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;flex-direction:column;background:#000;
+  font-family:var(--b);
+}
+.sim-sb{padding:9px 17px 4px;display:flex;align-items:center;justify-content:space-between;font-size:.68rem;font-weight:700;color:rgba(255,255,255,.8);flex-shrink:0;}
+.sb-r{display:flex;align-items:center;gap:7px;}
+.sb-sig{display:flex;align-items:flex-end;gap:2px;}
+.sb-sig span{background:currentColor;width:3px;border-radius:1px;}
+.sb-sig span:nth-child(1){height:4px;} .sb-sig span:nth-child(2){height:6px;} .sb-sig span:nth-child(3){height:8px;} .sb-sig span:nth-child(4){height:11px;}
+.bat{display:flex;align-items:center;gap:1px;}
+.bat-b{width:19px;height:10px;border:1.5px solid rgba(255,255,255,.65);border-radius:2px;padding:1.5px;display:flex;align-items:center;}
+.bat-f{height:100%;border-radius:1px;background:rgba(255,255,255,.8);}
+.bat-t{width:2px;height:4px;background:rgba(255,255,255,.65);border-radius:0 1px 1px 0;margin-left:1px;}
+.sim-tb{display:flex;align-items:center;gap:10px;padding:7px 14px 10px;flex-shrink:0;}
+.sim-back{color:white;font-size:1.25rem;cursor:pointer;background:none;border:none;padding:2px 5px 2px 0;line-height:1;}
+.sim-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.sim-cn{font-size:.88rem;font-weight:700;color:white;}
+.sim-cs{font-size:.67rem;margin-top:1px;color:rgba(255,255,255,.5);}
+.sim-ti{margin-left:auto;display:flex;gap:15px;font-size:.95rem;color:rgba(255,255,255,.55);}
+.sim-prog{padding:0 14px 8px;flex-shrink:0;}
+.sim-prog-labs{display:flex;justify-content:space-between;font-size:.65rem;font-weight:600;color:rgba(255,255,255,.35);margin-bottom:4px;}
+.sim-pbar{height:3px;background:rgba(255,255,255,.1);border-radius:10px;}
+.sim-pfill{height:100%;background:rgba(255,255,255,.55);border-radius:10px;transition:width .5s ease;}
+/* CHAT */
+.sim-chat{flex:1;overflow-y:auto;padding:9px 12px 12px;display:flex;flex-direction:column;gap:2px;scroll-behavior:smooth;}
+.sim-chat::-webkit-scrollbar{display:none;}
+.date-div{text-align:center;margin:7px 0;font-size:.62rem;font-weight:600;color:rgba(255,255,255,.3);}
+.mrow{display:flex;margin-bottom:1px;animation:msgIn .3s var(--ease) both;}
+.mrow.them{justify-content:flex-start;}
+.mrow.me{justify-content:flex-end;}
+.mbub{max-width:82%;padding:9px 12px;border-radius:17px;font-size:.84rem;line-height:1.5;word-break:break-word;}
+.mrow.them .mbub{border-bottom-left-radius:3px;}
+.mrow.me .mbub{border-bottom-right-radius:3px;}
+.mt{font-size:.58rem;text-align:right;margin-top:3px;opacity:.5;}
+.ty{display:flex;align-items:center;gap:3px;padding:9px 12px;border-radius:17px;border-bottom-left-radius:3px;animation:msgIn .28s ease;width:fit-content;}
+.td{width:6px;height:6px;border-radius:50%;animation:typingDot 1.2s infinite;}
+.td:nth-child(2){animation-delay:.2s;} .td:nth-child(3){animation-delay:.4s;}
+.sys-msg{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 12px;font-size:.77rem;color:rgba(255,255,255,.8);text-align:center;margin:4px 0;animation:msgIn .3s ease;}
+/* LINK PREVIEW */
+.lp{margin-top:7px;border-radius:9px;overflow:hidden;border:1px solid rgba(255,255,255,.07);}
+.lp-img{height:68px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;}
+.lp-bdy{padding:6px 8px;}
+.lp-dom{font-size:.58rem;font-weight:700;margin-bottom:2px;}
+.lp-ttl{font-size:.74rem;font-weight:700;line-height:1.3;}
+.lp-dsc{font-size:.65rem;margin-top:2px;opacity:.6;}
+/* CHOICES */
+.sim-choices{flex-shrink:0;padding:10px 12px 13px;border-top:1px solid rgba(255,255,255,.05);}
+.sim-cq{font-size:.84rem;font-weight:700;color:white;margin-bottom:8px;line-height:1.45;}
+.ch-list{display:flex;flex-direction:column;gap:6px;}
+.ch-btn{
+  padding:10px 12px;border-radius:11px;
+  border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  color:white;font-size:.8rem;font-weight:600;
+  cursor:pointer;text-align:left;transition:all .2s var(--ease);
+  font-family:var(--b);display:flex;align-items:center;gap:8px;line-height:1.4;
+}
+.ch-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);transform:translateX(3px);}
+.ch-btn:disabled{cursor:default;transform:none;}
+.c-good{background:rgba(0,232,122,.15)!important;border-color:#00E87A!important;color:#A7F3D0!important;}
+.c-bad{background:rgba(255,45,45,.15)!important;border-color:var(--red)!important;color:#FECACA!important;}
+.c-mid{background:rgba(255,212,0,.12)!important;border-color:var(--yellow)!important;color:#FEF3C7!important;}
+/* OUTCOME */
+.sim-oc{flex-shrink:0;padding:12px 12px 15px;animation:slideUp .4s var(--ease);}
+.oc-card{border-radius:15px;padding:16px 14px;margin-bottom:10px;text-align:center;}
+.oc-card.good{background:linear-gradient(135deg,rgba(0,232,122,.18),rgba(0,232,122,.07));border:1.5px solid rgba(0,232,122,.3);}
+.oc-card.bad{background:linear-gradient(135deg,rgba(255,45,45,.2),rgba(255,45,45,.07));border:1.5px solid rgba(255,45,45,.3);}
+.oc-card.mid{background:linear-gradient(135deg,rgba(255,212,0,.15),rgba(255,212,0,.05));border:1.5px solid rgba(255,212,0,.3);}
+.oc-icon{font-size:2.2rem;display:block;margin-bottom:6px;}
+.oc-title{font-family:var(--h);font-weight:900;font-size:.97rem;margin-bottom:5px;}
+.oc-card.good .oc-title{color:#34D399;} .oc-card.bad .oc-title{color:#FF6B6B;} .oc-card.mid .oc-title{color:var(--yellow);}
+.oc-text{font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.55;margin-bottom:9px;}
+.oc-flags{text-align:left;}
+.oc-ft{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;opacity:.7;}
+.oc-flag{display:flex;gap:5px;font-size:.75rem;color:rgba(255,255,255,.75);margin-bottom:4px;line-height:1.4;}
+.oc-flag::before{content:"⚠️";flex-shrink:0;font-size:.68rem;}
+.oc-flag.ok::before{content:"✅";}
+.oc-pts{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.09);padding:5px 12px;border-radius:100px;font-weight:800;color:white;font-size:.8rem;margin-top:7px;}
+.btn-nxt{width:100%;padding:13px;border-radius:12px;background:var(--red);color:white;font-weight:800;font-size:.88rem;border:none;cursor:pointer;font-family:var(--h);letter-spacing:.3px;transition:all .3s ease;}
+.btn-nxt:hover{opacity:.9;transform:translateY(-1px);}
+
+/* THEMES */
+.t-wa .sim-sb,.t-wa .sim-tb{background:#1f2c34;}
+.t-wa .sim-chat{background:#0b141a;background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23182229' fill-opacity='0.7'%3E%3Cpath d='M20 20.5V18H0v5h20v-.5zM10 28V22H0v8h10v-2zM10 8V2H0v8h10V8zM20 12V8H0v6h20v-2zM40 18v2H20v-2h20zM30 8h10V2H30v6zM30 22h10v-6H30v6zM40 28H20v2h20v-2z'/%3E%3C/g%3E%3C/svg%3E");}
+.t-wa .mrow.them .mbub{background:#1f2c34;color:#e9edef;}
+.t-wa .mrow.me .mbub{background:#005c4b;color:#e9edef;}
+.t-wa .ty{background:#1f2c34;} .t-wa .td{background:#8696a0;}
+.t-wa .sim-choices,.t-wa .sim-oc{background:#0b141a;}
+.t-wa .lp{background:#111b21;} .t-wa .lp-dom{color:#25D366;} .t-wa .lp-ttl{color:#e9edef;}
+
+.t-sms .sim-sb,.t-sms .sim-tb{background:#1c1c1e;}
+.t-sms .sim-chat{background:#000;}
+.t-sms .mrow.them .mbub{background:#1c1c1e;color:#fff;}
+.t-sms .mrow.me .mbub{background:#007aff;color:#fff;}
+.t-sms .ty{background:#1c1c1e;} .t-sms .td{background:#636366;}
+.t-sms .sim-choices,.t-sms .sim-oc{background:#000;}
+
+.t-email .sim-sb,.t-email .sim-tb{background:#1a73e8;}
+.t-email .sim-chat{background:#f6f6f6;padding:13px;}
+.t-email .mrow.them .mbub{background:white;color:#202124;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.t-email .mt{color:#5f6368;}
+.t-email .ty{background:white;} .t-email .td{background:#bdc1c6;}
+.t-email .sim-choices{background:#f6f6f6;border-top:1px solid #e0e0e0;}
+.t-email .sim-cq,.t-email .ch-btn{color:#1a1a1a;}
+.t-email .ch-btn{border-color:#e0e0e0;background:white;}
+.t-email .ch-btn:hover{background:#f1f3f4;}
+.t-email .sim-oc{background:#f6f6f6;}
+.t-email .date-div{color:rgba(0,0,0,.3);}
+.t-email .sys-msg{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.08);color:#333;}
+
+.t-call .sim-sb,.t-call .sim-tb{background:#1c1c1e;}
+.t-call .sim-chat{background:linear-gradient(180deg,#1c1c1e,#2c2c2e);}
+.t-call .mrow.them .mbub{background:rgba(255,255,255,.08);color:#e5e5ea;border:1px solid rgba(255,255,255,.1);}
+.t-call .ty{background:rgba(255,255,255,.06);} .t-call .td{background:#8e8e93;}
+.t-call .sim-choices,.t-call .sim-oc{background:linear-gradient(180deg,#2c2c2e,#1c1c1e);}
+
+/* DALTONISMO */
+body.cb .btn-sim{background:linear-gradient(135deg,#0052CC,#003BA0)!important;}
+body.cb .btn-nao{background:linear-gradient(135deg,#E6B800,#CC9900)!important;color:#000!important;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ LANDING ══════════════════ -->
+<div id="pg-land" class="page">
+
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span class="t-item">🚨 1 tentativa de golpe a cada 2,2 segundos no Brasil</span><span class="t-dot">·</span>
+      <span class="t-item">📱 51% dos brasileiros foram vítimas de fraude em 2024 — Serasa Experian</span><span class="t-dot">·</span>
+      <span class="t-item">💸 R$ 2,3 trilhões em prejuízo com golpes digitais em 2024</span><span class="t-dot">·</span>
+      <span class="t-item">👦 Golpes contra jovens subiram 43% no 1º semestre de 2025</span><span class="t-dot">·</span>
+      <span class="t-item">🤖 Deepfakes com IA cresceram 308% entre 2024 e 2025 — Observatório Lupa</span><span class="t-dot">·</span>
+      <span class="t-item">🚨 1 tentativa de golpe a cada 2,2 segundos no Brasil</span><span class="t-dot">·</span>
+      <span class="t-item">📱 51% dos brasileiros foram vítimas de fraude em 2024 — Serasa Experian</span><span class="t-dot">·</span>
+      <span class="t-item">💸 R$ 2,3 trilhões em prejuízo com golpes digitais em 2024</span><span class="t-dot">·</span>
+      <span class="t-item">👦 Golpes contra jovens subiram 43% no 1º semestre de 2025</span><span class="t-dot">·</span>
+      <span class="t-item">🤖 Deepfakes com IA cresceram 308% entre 2024 e 2025 — Observatório Lupa</span><span class="t-dot">·</span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="logo">Caí<em>Não</em></div>
+    <div class="nav-pill">HackNav 2026</div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="float-emojis">
+      <span class="fe">📱</span><span class="fe">💸</span>
+      <span class="fe">🔒</span><span class="fe">⚠️</span><span class="fe">🛡️</span>
+    </div>
+
+    <div class="hero-eyebrow"><div class="live-dot"></div>Agora mesmo, alguém está sendo enganado</div>
+
+    <h1 class="hero-title">
+      Você<br><span class="outline">Cairia?</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Todo mundo acha que não vai cair num golpe.<br>
+      <strong>51% das pessoas achavam o mesmo.</strong><br>
+      Teste seus reflexos antes que os golpistas testem.
+    </p>
+
+    <div class="big-stat">
+      <span class="big-stat-num">40.000.000</span>
+      <p class="big-stat-label">brasileiros foram vítimas de golpe digital em 2024.<br>Equivale a toda a população de São Paulo, Rio e Minas juntas.</p>
+      <p class="big-stat-source">📎 Fonte: DataSenado, pesquisa com 22 mil pessoas, 2024</p>
+    </div>
+
+    <div class="mini-stats">
+      <div class="ms"><span class="ms-num">2,2s</span><span class="ms-txt">por tentativa de golpe</span></div>
+      <div class="ms"><span class="ms-num">47%</span><span class="ms-txt">cartão de crédito clonado</span></div>
+      <div class="ms"><span class="ms-num">+43%</span><span class="ms-txt">golpes em jovens 2025</span></div>
+      <div class="ms"><span class="ms-num">308%</span><span class="ms-txt">deepfakes com IA</span></div>
+    </div>
+
+    <div class="cta-wrap">
+      <button class="btn-cta" onclick="go('pg-cfg')">
+        🛡️ Testar meus reflexos agora
+      </button>
+      <button class="btn-outline" onclick="document.getElementById('como').scrollIntoView({behavior:'smooth'})">
+        Como funciona? ↓
+      </button>
+    </div>
+
+    <p class="trust-line">
+      <span class="lock">🔒</span> Sem cadastro · Sem dados pessoais · 100% grátis
+      <br>Feito com dados de: Serasa, Lupa, DataSenado, Febraban
+    </p>
+  </section>
+
+  <!-- HOW -->
+  <section class="section" id="como">
+    <p class="sec-label">Como funciona</p>
+    <h2 class="sec-title">Diferente de <span>qualquer quiz</span><br>que você já viu</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">01</div>
+        <div class="step-body">
+          <strong>Escolhe o que é mais parecido com você</strong>
+          <p>Jovem, adulto ou idoso — cada um recebe golpes diferentes. A gente personaliza pra sua realidade.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <div class="step-body">
+          <strong>Você vive a situação de verdade</strong>
+          <p>No Modo Simulação, aparece uma tela de WhatsApp, SMS ou ligação — igual ao que chega no seu celular.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <div class="step-body">
+          <strong>Toma decisões como na vida real</strong>
+          <p>Você escolhe o que faria. Se cair no golpe, aparece o dinheiro que você teria perdido — e aprende como se defender.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">04</div>
+        <div class="step-body">
+          <strong>Desafia quem você ama</strong>
+          <p>Manda o resultado pro WhatsApp e desafia família e amigos. Uma pessoa avisada protege todos em volta.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INNOVATION -->
+  <div class="innovation">
+    <div class="inno-card">
+      <span class="inno-icon">💸</span>
+      <h3 class="inno-title">Você vê o dinheiro que <span>perderia</span></h3>
+      <p class="inno-desc">
+        Nenhum quiz faz isso: quando você cai numa simulação, aparece uma <strong>tela de Pix sendo enviado</strong> com o valor real que você teria perdido. Mexe com a emoção. Grava na memória.
+      </p>
+      <p class="inno-feature">Baseado em golpes reais com valores reais reportados à Polícia Civil</p>
+      <p class="inno-feature">Informação que emociona é informação que fica</p>
+      <p class="inno-feature">Desenvolvido para o HackNav 2026</p>
+    </div>
+  </div>
+
+  <!-- SOURCES -->
+  <section class="sources-sec">
+    <p class="sec-label" style="text-align:center;margin-bottom:12px">Fontes dos dados</p>
+    <div class="sources-chips">
+      <div class="s-chip">Serasa Experian 2025</div>
+      <div class="s-chip">Observatório Lupa 2026</div>
+      <div class="s-chip">DataSenado 2024</div>
+      <div class="s-chip">Agência Brasil</div>
+      <div class="s-chip">Fórum Bras. Segurança Pública</div>
+      <div class="s-chip">Banco Central do Brasil</div>
+      <div class="s-chip">Febraban 2024</div>
+      <div class="s-chip">Cetic/Unesco</div>
+      <div class="s-chip">Ministério da Justiça</div>
+      <div class="s-chip">SaferNet Brasil</div>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      <strong>CaíNão</strong> — Projeto educativo, sem fins lucrativos, sem anúncios.<br>
+      Criado para o <strong>HackNav 2026</strong> · Combate à desinformação e golpes digitais.<br>
+      Dados: <a href="https://www.serasaexperian.com.br" target="_blank">Serasa</a> · <a href="https://agenciabrasil.ebc.com.br" target="_blank">Ag. Brasil</a> · <a href="https://www.aosfatos.org" target="_blank">Aos Fatos</a> · <a href="https://www.safernet.org.br" target="_blank">SaferNet</a>
+    </p>
+  </footer>
+
+</div>
+
+<!-- ══════════════════ CONFIG ══════════════════ -->
+<div id="pg-cfg" class="inner hidden">
+  <div class="box page">
+    <h2>⚙️ Ajustes rápidos</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">Só leva 10 segundos. Pode pular se quiser.</p>
+    <div class="cfg-row"><span>🔊 Leitura em voz alta</span><label class="sw"><input type="checkbox" id="v-opt"><span class="sl"></span></label></div>
+    <div class="cfg-row"><span>🔡 Letra maior</span><label class="sw"><input type="checkbox" id="t-opt" onchange="bigText()"><span class="sl"></span></label></div>
+    <div class="cfg-row"><span>👁️ Daltônico?</span><select id="c-opt" onchange="colorBlind()"><option value="">Não</option><option value="cb">Sim</option></select></div>
+    <div class="cfg-row"><span>⏱️ Contador de tempo</span><label class="sw"><input type="checkbox" id="ti-opt" checked><span class="sl"></span></label></div>
+    <button class="btn btn-red" onclick="go('pg-mode')">Pronto, vamos lá! →</button>
+    <button class="btn btn-ghost" onclick="go('pg-land')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════ MODE ══════════════════ -->
+<div id="pg-mode" class="inner hidden">
+  <div class="box page">
+    <h2>Como você quer treinar?</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:4px;">Dois jeitos diferentes. Os dois ensinam coisas que você não vai esquecer.</p>
+    <div class="mode-grid">
+      <div class="mc" onclick="go('pg-qlevels')">
+        <span class="mc-icon">❓</span>
+        <span class="mc-name">Quiz</span>
+        <span class="mc-sub">Verdadeiro ou Falso com timer e explicação</span>
+      </div>
+      <div class="mc hot" onclick="go('pg-slevels')">
+        <span class="new">NOVO</span>
+        <span class="mc-icon">📱</span>
+        <span class="mc-name">Simulação</span>
+        <span class="mc-sub">Você vive o golpe na pele e decide o que fazer</span>
+      </div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('pg-cfg')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════ QUIZ LEVELS ══════════════════ -->
+<div id="pg-qlevels" class="inner hidden">
+  <div class="box page">
+    <h2>Qual se parece mais com você?</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">Os golpistas mudam a abordagem dependendo da idade. Escolha o seu perfil pra treinar com o que é mais real pra você.</p>
+    <div class="pc" onclick="initQuiz('jovem')">
+      <span class="pc-em">👦</span>
+      <div class="pc-info"><strong>Jovem (até 30 anos)</strong><span>Golpes em games, redes sociais, IA e emprego falso</span></div>
+      <span class="pc-badge">8 perguntas</span>
+    </div>
+    <div class="pc" onclick="initQuiz('adulto')">
+      <span class="pc-em">👨</span>
+      <div class="pc-info"><strong>Adulto (30 a 60 anos)</strong><span>Golpes de banco, Pix, Receita Federal e emprego</span></div>
+      <span class="pc-badge">8 perguntas</span>
+    </div>
+    <div class="pc" onclick="initQuiz('idoso')">
+      <span class="pc-em">👴</span>
+      <div class="pc-info"><strong>Idoso (acima de 60)</strong><span>Golpes no WhatsApp, INSS, família e benefícios</span></div>
+      <span class="pc-badge">8 perguntas</span>
+    </div>
+    <button class="btn btn-ghost" onclick="go('pg-mode')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════ SIM LEVELS ══════════════════ -->
+<div id="pg-slevels" class="inner hidden">
+  <div class="box page">
+    <h2>📱 Modo Simulação</h2>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">Você vai receber mensagens, ligações e e-mails <strong style="color:var(--off)">idênticos aos que golpistas mandam de verdade.</strong> Você decide o que fazer — e vê o que aconteceria.</p>
+    <div class="warn-box">⚠️ <strong>Aviso:</strong> As cenas são fictícias e educativas. Os golpes são baseados em casos reais reportados à Polícia Civil.</div>
+    <div class="pc" onclick="initSim('jovem')">
+      <span class="pc-em">👦</span>
+      <div class="pc-info"><strong>Jovem</strong><span>Golpe do gamer, perfil falso, phishing em app</span></div>
+      <span class="pc-badge hot">5 cenas</span>
+    </div>
+    <div class="pc" onclick="initSim('adulto')">
+      <span class="pc-em">👨</span>
+      <div class="pc-info"><strong>Adulto</strong><span>Falso banco, Pix, Receita, emprego falso</span></div>
+      <span class="pc-badge hot">5 cenas</span>
+    </div>
+    <div class="pc" onclick="initSim('idoso')">
+      <span class="pc-em">👴</span>
+      <div class="pc-info"><strong>Idoso</strong><span>WhatsApp filho, INSS falso, motoboy, farmácia</span></div>
+      <span class="pc-badge hot">5 cenas</span>
+    </div>
+    <button class="btn btn-ghost" onclick="go('pg-mode')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════ QUIZ ══════════════════ -->
+<div id="pg-quiz" class="inner hidden">
+  <div class="box page" style="position:relative;">
+    <div id="q-load" class="box-loader hidden"><div class="spin"></div><p style="font-size:.82rem;color:var(--muted)">Preparando...</p></div>
+    <div class="ph"><span class="pl" id="q-counter">Pergunta 1 de 8</span><div id="streak-el"></div></div>
+    <div class="pb"><div class="pf" id="q-fill"></div></div>
+    <div class="tw" id="tw">
+      <div class="tc">
+        <svg width="46" height="46" viewBox="0 0 44 44"><circle class="ttrack" cx="22" cy="22" r="20"/><circle class="tfill" id="t-ring" cx="22" cy="22" r="20"/></svg>
+        <div class="tnum" id="t-num">15</div>
+      </div>
+    </div>
+    <div class="q-img" id="q-img"></div>
+    <p class="q-txt" id="q-txt"></p>
+    <p class="q-source" id="q-src"></p>
+    <div id="q-acts" class="ans-grid">
+      <button class="ans-btn btn-sim" onclick="chk(true)">✅ É verdade</button>
+      <button class="ans-btn btn-nao" onclick="chk(false)">❌ É falso</button>
+    </div>
+    <div id="q-fb" class="hidden">
+      <div id="q-fb-msg" class="fb"></div>
+      <button class="btn btn-red" style="margin-top:12px" onclick="qnxt()">Próxima →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ RESULT ══════════════════ -->
+<div id="pg-result" class="inner hidden">
+  <div class="box page">
+    <div class="r-center">
+      <span class="r-medal" id="r-med">🏆</span>
+      <span class="r-score" id="r-sc">0</span>
+      <p class="r-lbl" id="r-lb">pontos</p>
+    </div>
+    <div class="r-stats">
+      <div class="r-st"><span class="rv" id="r-ok">0</span><span class="rk">✅ Acertos</span></div>
+      <div class="r-st"><span class="rv" id="r-no">0</span><span class="rk">❌ Erros</span></div>
+      <div class="r-st"><span class="rv" id="r-str">0</span><span class="rk">🔥 Sequência</span></div>
+    </div>
+    <div class="r-lvl"><div class="r-lvl-t" id="r-lt"></div><div class="r-lvl-d" id="r-ld"></div></div>
+    <div class="challenge-card">
+      <h3>🎯 Desafie alguém!</h3>
+      <p>Manda pro WhatsApp e vê se alguém consegue pontuação maior que a sua. Vai que você é o melhor da família?</p>
+    </div>
+    <button class="btn btn-wa" onclick="waShare()">📲 Compartilhar e Desafiar no WhatsApp</button>
+    <button class="btn btn-ghost" onclick="go('pg-mode')">🔄 Tentar outro modo</button>
+    <button class="btn btn-ghost" onclick="go('pg-land')">🏠 Início</button>
+  </div>
+</div>
+
+<!-- ══════════════════ SIM SCREEN ══════════════════ -->
+<div id="sim-screen" class="hidden">
+  <div class="sim-sb" id="sim-sb"><span id="sim-clk">9:41</span><div class="sb-r"><div class="sb-sig"><span></span><span></span><span></span><span></span></div><span style="font-size:.65rem;font-weight:700">5G</span><div class="bat"><div class="bat-b"><div class="bat-f" style="width:68%"></div></div><div class="bat-t"></div></div></div></div>
+  <div class="sim-tb" id="sim-tb">
+    <button class="sim-back" onclick="exitSim()">‹</button>
+    <div class="sim-av" id="sim-av"></div>
+    <div><div class="sim-cn" id="sim-cn"></div><div class="sim-cs" id="sim-cs"></div></div>
+    <div class="sim-ti" id="sim-ti"></div>
+  </div>
+  <div class="sim-prog">
+    <div class="sim-prog-labs"><span id="sim-lbl">Cena 1 de 5</span><span id="sim-pts">0 pts</span></div>
+    <div class="sim-pbar"><div class="sim-pfill" id="sim-pf"></div></div>
+  </div>
+  <div class="sim-chat" id="sim-chat"></div>
+  <div id="sim-ch" class="sim-choices hidden">
+    <p class="sim-cq" id="sim-cq"></p>
+    <div class="ch-list" id="sim-clist"></div>
+  </div>
+  <div id="sim-oc-wrap" class="sim-oc hidden">
+    <div id="sim-oc-card" class="oc-card"></div>
+    <button class="btn-nxt" id="sim-nxt" onclick="simNext()">Próxima cena →</button>
+  </div>
+</div>
+
+<!-- ══════════════════ PIX LOSS OVERLAY ══════════════════ -->
+<div id="pix-overlay" class="pix-overlay hidden">
+  <div class="pix-phone">
+    <div class="pix-topbar">
+      <span class="pix-appname" id="pix-bank">Banco</span>
+      <span style="font-size:.65rem;color:#4b5563">9:41</span>
+    </div>
+    <div class="pix-body">
+      <div class="pix-app-icon">💸</div>
+      <p class="pix-title">Pix enviado</p>
+      <span class="pix-amount" id="pix-amt">R$ 0,00</span>
+      <p class="pix-label" id="pix-who">Para: Desconhecido</p>
+      <div class="pix-status">
+        Você caiu no golpe.<br>
+        Esse valor foi para a conta de um criminoso.
+      </div>
+    </div>
+    <p class="pix-learn" id="pix-learn"></p>
+    <button class="pix-btn" onclick="closePix()">Entendi — não vou esquecer</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════ DATA ═══════════ */
+const QUIZ={
+  jovem:[
+    {q:"Conteúdos falsos criados com IA triplicaram no Brasil entre 2024 e 2025.",a:true,img:"https://images.unsplash.com/photo-1677442136019-21780ecad995?w=500",e:"Verdade! O Observatório Lupa registrou crescimento de 308% em deepfakes e conteúdos falsos com IA.",src:"Agência Brasil, fev/2026"},
+    {q:"O selo azul de verificado garante que tudo que o perfil posta é verdadeiro.",a:false,img:"https://images.unsplash.com/photo-1611605698335-8b1569810432?w=500",e:"Falso! O selo verifica a identidade, mas não o conteúdo. Perfis verificados podem ser hackeados.",src:"Aos Fatos"},
+    {q:"Em 2025, jovens de até 25 anos foram mais alvos de golpes do que idosos.",a:true,img:"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500",e:"Verdade! Segundo a Serasa, jovens de até 25 anos tiveram 43% mais tentativas de golpe.",src:"Serasa Experian, 2025"},
+    {q:"IAs de imagem costumam errar na hora de desenhar mãos humanas.",a:true,img:"https://images.unsplash.com/photo-1589254065878-42c9da997008?w=500",e:"Verdade! Dedos extras ou anatomia estranha são as principais pistas de imagem feita por IA.",src:"MIT Technology Review"},
+    {q:"É possível criar um site idêntico ao do seu banco para roubar sua senha.",a:true,img:"https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500",e:"Verdade! Golpistas clonam interfaces inteiras. Sempre confira o endereço na barra do navegador.",src:"Febraban, 2024"},
+    {q:"Videochamada com deepfake em tempo real já é tecnicamente possível.",a:true,img:"https://images.unsplash.com/photo-1633412802994-5c058f151b66?w=500",e:"Verdade! Softwares modernos trocam o rosto da pessoa em tempo real durante chamadas.",src:"Observatório Lupa, 2026"},
+    {q:"Repassar notícias sem ler o conteúdo é arriscado mesmo que o título pareça verdadeiro.",a:true,img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500",e:"Verdade! Títulos enganosos são a principal arma da desinformação. Sempre leia antes de repassar.",src:"Foca nas Mídias/USP"},
+    {q:"Usar a mesma senha forte em todos os sites é seguro.",a:false,img:"https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=500",e:"Falso! Se vazar uma senha, vazam todas as suas contas. Use senhas diferentes em cada lugar.",src:"Instituto Nacional de Combate ao Cibercrime"}
+  ],
+  adulto:[
+    {q:"Banco te liga pedindo token ou senha para cancelar uma compra suspeita.",a:false,img:"https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=500",e:"Falso! Banco NUNCA liga pedindo senha ou token. Qualquer ligação pedindo isso é golpe — desligue.",src:"Febraban, 2024"},
+    {q:"Pix enviado pode ser cancelado automaticamente se você perceber o golpe na hora.",a:false,img:"https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=500",e:"Falso! Pix é instantâneo e não tem como cancelar. Após enviar, o dinheiro é do outro.",src:"Banco Central do Brasil"},
+    {q:"Em 2024, golpes digitais causaram R$ 2,3 trilhões em prejuízos no Brasil.",a:true,img:"https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=500",e:"Verdade! Segundo o Senado Federal, as estimativas de 2024 chegam a R$ 2,3 trilhões.",src:"Senado Notícias, 2025"},
+    {q:"O Banco Central manda SMS com links para você resgatar 'valores esquecidos'.",a:false,img:"https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=500",e:"Falso! Consulta de valores esquecidos é só no site oficial do BC. SMS com link é golpe.",src:"Banco Central do Brasil"},
+    {q:"No Brasil, uma tentativa de fraude digital acontece a cada 2,2 segundos.",a:true,img:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500",e:"Verdade! A Serasa registrou 1.119.316 tentativas só em fevereiro de 2025.",src:"Serasa Experian, mar/2025"},
+    {q:"Links encurtados como bit.ly podem esconder sites maliciosos.",a:true,img:"https://images.unsplash.com/photo-1586282391129-76a6df230234?w=500",e:"Verdade! Use o checkshorturl.com para ver o destino real antes de clicar.",src:"Cetic/Unesco"},
+    {q:"Estelionatos digitais cresceram 13,6% no Brasil entre 2022 e 2023.",a:true,img:"https://images.unsplash.com/photo-1633265486231-2298a241d354?w=500",e:"Verdade! O Anuário Brasileiro de Segurança Pública 2024 confirmou esse crescimento.",src:"Fórum Bras. de Segurança Pública, 2024"},
+    {q:"Empresa que cobra do candidato antes de contratar está aplicando um golpe.",a:true,img:"https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=500",e:"Verdade! Empresa séria nunca cobra do candidato. Pagamento antes de contratar = golpe.",src:"Ministério do Trabalho"}
+  ],
+  idoso:[
+    {q:"O WhatsApp foi responsável por quase 90% da desinformação no Brasil em 2024.",a:true,img:"https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=500",e:"Verdade! Em 2024 quase 90% da desinformação circulava pelo WhatsApp. Caiu para 46% em 2025.",src:"Observatório Lupa, 2026"},
+    {q:"O INSS faz prova de vida por telefone, pedindo senha bancária.",a:false,img:"https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?w=500",e:"Falso! O INSS NUNCA pede senha por telefone. Prova de vida é pelo app Meu INSS ou agência.",src:"Ministério da Previdência Social"},
+    {q:"Banco pode mandar um técnico na sua casa para trocar cartão bloqueado.",a:false,img:"https://images.unsplash.com/photo-1556742044-3c52d6e88c62?w=500",e:"Falso! Banco NUNCA manda buscar cartão em casa. Isso é o Golpe do Motoboy.",src:"Febraban, 2024"},
+    {q:"Idosos acima de 60 anos são responsáveis por 16% das vítimas de golpe digital.",a:true,img:"https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=500",e:"Verdade! Mas surpreendentemente os jovens de 16-29 anos são 27% das vítimas.",src:"DataSenado, 2024"},
+    {q:"Correntes de WhatsApp com links para benefícios do governo podem roubar seus dados.",a:true,img:"https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500",e:"Verdade! Links em correntes coletam dados ou instalam vírus. Nunca clique.",src:"SaferNet Brasil"},
+    {q:"Você consegue verificar se uma foto é verdadeira pelo Google Imagens.",a:true,img:"https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=500",e:"Verdade! A busca reversa mostra onde a foto apareceu antes, revelando se foi tirada de contexto.",src:"Aos Fatos"},
+    {q:"Ligar de volta pro número que te ligou é seguro para confirmar se é seu banco.",a:false,img:"https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=500",e:"Falso! Golpistas mantêm a linha ou falsificam o número. Use o número do verso do cartão.",src:"Banco Central do Brasil"},
+    {q:"Em 2024, golpes digitais atingiram cerca de 40 milhões de brasileiros.",a:true,img:"https://images.unsplash.com/photo-1542838132-92c53300491e?w=500",e:"Verdade! Pesquisa do DataSenado com 22 mil pessoas aponta esse número alarmante.",src:"DataSenado, 2024"}
+  ]
+};
+
+const SIMS={
+  jovem:[
+    {th:'t-wa',ct:{n:'Mateus 🎮',s:'online',av:'👦',cl:'#25D366'},ti:'📹 📞',pixAmt:'R$ 0,00',pixBank:'',pixWho:'',
+     intro:[{f:'them',t:'Ei!! Você joga Free Fire?',d:800},{f:'them',t:'Tenho uma conta com 50 skins raras pra te dar de graça 🎁',d:1600},{f:'them',t:'Só precisa me ajudar com uma coisa pequena',d:2200}],
+     steps:[
+       {ms:[{f:'them',t:'Entra nesse link aí e confirma que não é robô, aí eu libero a conta pra você 👇',d:800},{f:'them',t:'steam-free-skins.net/verificar',d:1300,lk:{ic:'🎮',dm:'steam-free-skins.net',tt:'Steam — Verificação',ds:'Confirme para receber os itens grátis'}}],
+        q:'O que você faz?',
+        chs:[{t:'Clico no link, quero as skins',ic:'🖱️',tp:'bad',pt:0,pix:{show:false}},{t:'O domínio é diferente do site oficial da Steam — não clico',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Pergunto mais detalhes antes',ic:'🤔',tp:'mid',pt:2,pix:{show:false}},{t:'Mando pro grupo ver o que acham',ic:'📤',tp:'bad',pt:0,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'Perfeito!! Agora coloca seu login e senha lá que eu libero tudo',d:900}],mid:[{f:'them',t:'Cara, é só confirmar. Já fiz com vários amigos 🙏',d:800}],good:[{f:'sys',t:'✅ Domínio "steam-free-skins.net" é FALSO. A Steam só usa steampowered.com.',d:700}]},
+        q:'O que você faz agora?',
+        chs:[{t:'Coloco meu login pra finalizar',ic:'🔑',tp:'bad',pt:0,pix:{show:true,amt:'R$ 847,00',bank:'Steam Wallet',who:'Conta: Mateus_Gamer2024',learn:'Golpistas roubam contas Steam e vendem online. Conta com itens raros pode valer centenas de reais.'}},{t:'Fecho tudo e bloqueio o contato',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Pergunto se tem link oficial da Steam',ic:'🌐',tp:'good',pt:5,pix:{show:false}},{t:'Peço que mande a conta primeiro',ic:'📦',tp:'mid',pt:2,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💀 Sua conta Steam foi invadida. Todos os itens foram roubados.',d:700}],good:[{f:'them',t:'Tudo bem... R$15 de taxa e você recebe os itens direto sem link 😏',d:900}],mid:[{f:'them',t:'Impossível pelo site oficial. Só dá por aqui mesmo.',d:800}]},
+        q:'Qual é o principal sinal de golpe que você deveria ter percebido?',
+        chs:[{t:'Domínio diferente do oficial (steam-free-skins ≠ steampowered.com)',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Oferta boa demais vinda do nada de um desconhecido',ic:'🎁',tp:'good',pt:5,pix:{show:false}},{t:'Pedido de verificação antes de qualquer coisa',ic:'⚠️',tp:'good',pt:5,pix:{show:false}},{t:'Alguém me contatar do nada sem eu pedir',ic:'❓',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Você se protegeu! Resumo do que aprendeu:',d:500}],bad:[{f:'sys',t:'⚠️ Troque sua senha agora em steampowered.com. Ative autenticação em dois fatores.',d:600}]},
+        q:'Como você se protege de golpes assim?',
+        chs:[{t:'Acesso plataformas SEMPRE pelo app ou site oficial — nunca por link',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'Nunca forneço login por links recebidos no chat',ic:'🔒',tp:'good',pt:5,pix:{show:false}},{t:'Ativo autenticação em dois fatores em todas as contas',ic:'🛡️',tp:'good',pt:5,pix:{show:false}},{t:'Aviso amigos gamers sobre esse golpe',ic:'📢',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Golpe bloqueado!',tx:'Você reconheceu o phishing antes de cair. Domínio falso + oferta irreal = golpe clássico de gamer.',fl:['steam-free-skins.net não é a Steam — sempre verifique o domínio','Conta Steam grátis de desconhecido = sempre armadilha','Verificar o domínio leva 5 segundos e protege tudo']},mid:{tp:'mid',ic:'🤔',tt:'Quase escapou!',tx:'Você desconfiou mas hesitou. Com phishing, demora é risco. Ao ver domínio suspeito, bloqueie imediatamente.',fl:['Domínio diferente do oficial basta para sair','Nunca dê mais chances a contatos suspeitos']},bad:{tp:'bad',ic:'😨',tt:'Conta comprometida!',tx:'Sua conta Steam foi invadida. Mude a senha agora em steampowered.com e ative autenticação em dois fatores.',fl:['steampowered.com é o ÚNICO domínio oficial','Nunca insira credenciais em links de chat','Contas grátis de desconhecidos = sempre golpe']}}
+    },
+    {th:'t-wa',ct:{n:'Ana Paula 💕',s:'online agora',av:'👩',cl:'#FF69B4'},ti:'📹 📞',
+     intro:[{f:'them',t:'Oi!! Vi você no perfil de amigos em comum 😊',d:700},{f:'them',t:'Posso te falar uma coisa? Achei você muito fofo haha',d:1500},{f:'them',t:'Sou modelo fotográfica, moro em SP 📸',d:2000}],
+     steps:[
+       {ms:[{f:'them',t:'Você toparia conversar mais? Me manda seu número, aqui fica difícil',d:800},{f:'them',t:'Posso te mandar uma foto minha primeiro se quiser ver 😏',d:1400}],
+        q:'O que você faz?',
+        chs:[{t:'Mando meu número — ela parece legal',ic:'📱',tp:'bad',pt:0,pix:{show:false}},{t:'Verifico o perfil dela antes (data de criação, fotos, posts)',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Proponho uma videochamada pra ver se é real',ic:'📹',tp:'good',pt:5,pix:{show:false}},{t:'Respondo normalmente sem dar meu número',ic:'💬',tp:'mid',pt:3,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'Que bom!! Posso te mandar uma foto minha exclusiva? São R$20 só 😏',d:1000}],mid:[{f:'them',t:'Câmera tá quebrada 😢 mas tenho fotos exclusivas por R$20',d:800}],good:[{f:'sys',t:'🔍 Perfil criado há 3 dias, todas as fotos sem rosto, zero posts reais. Perfil falso.',d:700}]},
+        q:'Como você responde?',
+        chs:[{t:'Pago R$20 pelas fotos exclusivas',ic:'💰',tp:'bad',pt:0,pix:{show:true,amt:'R$ 20,00',bank:'Pix',who:'Chave: ana.paula.modelo',learn:'Você pagou por fotos que não existem. O golpe do Romance Scam lesou R$350 milhões no Brasil em 2024.'}},{t:'Bloqueio — perfil falso confirmado',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Peço videochamada antes de qualquer coisa',ic:'📹',tp:'good',pt:5,pix:{show:false}},{t:'Pergunto onde mora e o que faz',ic:'💬',tp:'mid',pt:2,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ Você pagou. O contato sumiu e bloqueou você.',d:600}],good:[{f:'sys',t:'✅ Você identificou o Romance Scam! Esse golpe afeta centenas de milhares de jovens.',d:600}],mid:[{f:'them',t:'Câmera quebrada mesmo 😢 mas tenho fotos bem legais por R$20...',d:800}]},
+        q:'Quais são os sinais do Romance Scam?',
+        chs:[{t:'Perfil criado recentemente sem histórico real',ic:'📅',tp:'good',pt:5,pix:{show:false}},{t:'Câmera sempre "quebrada" para videochamada',ic:'📹',tp:'good',pt:5,pix:{show:false}},{t:'Pedido de dinheiro logo no início',ic:'💸',tp:'good',pt:5,pix:{show:false}},{t:'Fotos de modelo sem o rosto identificável',ic:'🖼️',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Compartilhe esse conhecimento!',d:500}],bad:[{f:'sys',t:'⚠️ Denuncie o perfil na plataforma como golpe.',d:500}]},
+        q:'Como proteger amigos do Romance Scam?',
+        chs:[{t:'Proponha videochamada antes de confiar em alguém online',ic:'📹',tp:'good',pt:5,pix:{show:false}},{t:'Perfil novo + foto bonita = suspeito sempre',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Nunca pague por conteúdo de quem você nunca viu ao vivo',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Avise amigos sobre esse golpe',ic:'📢',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Romance Scam bloqueado!',tx:'Você reconheceu os sinais antes de perder dinheiro. Perfis novos, câmera quebrada e pedido de dinheiro são as três bandeiras vermelhas.',fl:['Perfil criado há dias sem histórico = alerta máximo','Câmera quebrada impede verificação da identidade','Pedido de dinheiro de desconhecido online = bloqueie']},mid:{tp:'mid',ic:'🤔',tt:'Quase caiu!',tx:'Você teve bom instinto mas poderia ter sido mais decisivo. Ao primeiro sinal, bloqueie.',fl:['Câmera quebrada = está escondendo algo','Proposta de conteúdo pago cedo demais é sinal claro']},bad:{tp:'bad',ic:'😨',tt:'Romance Scam aplicado!',tx:'Você foi vítima do golpe mais comum em jovens nas redes sociais. Nunca pague por conteúdo de quem você nunca viu por vídeo.',fl:['Perfil novo com foto de modelo = red flag','Câmera quebrada = não é quem diz ser','Nunca pague antes de verificar por vídeo']}}
+    },
+    {th:'t-sms',ct:{n:'STEAM',s:'Mensagem de texto',av:'🎮',cl:'#1b2838'},ti:'',
+     intro:[{f:'them',t:'[STEAM] Sua conta foi acessada de Moscou, Rússia.',d:700},{f:'them',t:'Acesse agora: steam-security-alert.net/verificar',d:1400,lk:{ic:'⚠️',dm:'steam-security-alert.net',tt:'Steam Security',ds:'Acesso suspeito — aja em 30 minutos'}},{f:'them',t:'Prazo: 30 minutos ou conta SUSPENSA.',d:2100}],
+     steps:[
+       {ms:[],q:'Você recebeu um SMS urgente da "Steam". O que você faz?',
+        chs:[{t:'Clico no link — não quero perder minha conta',ic:'😰',tp:'bad',pt:0,pix:{show:true,amt:'R$ 1.247,00',bank:'Steam Wallet',who:'Conta: seu_usuário_steam',learn:'Com seu login, golpistas vendem sua conta e todos os itens. Contas com skins raras valem muito.'}},{t:'Abro o app oficial da Steam para verificar',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'O domínio é diferente do oficial — é golpe',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Encaminho pra um amigo ver',ic:'📤',tp:'mid',pt:1,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ O site pediu login, senha e código de confirmação.',d:700}],good:[{f:'sys',t:'✅ No app oficial da Steam: nenhum alerta. Nenhum acesso suspeito.',d:700},{f:'them',t:'Novo SMS: "Conta suspensa em 10 minutos!"',d:1500}],mid:[{f:'sys',t:'Seu amigo também não sabe. O domínio "steam-security-alert.net" claramente não é a Steam.',d:800}]},
+        q:'O que você faz agora?',
+        chs:[{t:'Confirmo que é golpe e denuncio o número',ic:'🚨',tp:'good',pt:5,pix:{show:false}},{t:'Cedo à pressão e clico no link',ic:'😰',tp:'bad',pt:0,pix:{show:true,amt:'R$ 1.247,00',bank:'Steam Wallet',who:'Conta: seu_usuário_steam',learn:'A conta foi invadida. Troque a senha agora em steampowered.com e ative autenticação em dois fatores.'}},{t:'Ativo autenticação em dois fatores no app oficial',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Entro em contato com suporte oficial da Steam',ic:'💬',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ Seus dados foram roubados. Mude a senha agora.',d:600}],good:[{f:'sys',t:'✅ Sua conta está segura. Esse tipo de SMS afeta milhões de gamers.',d:600}]},
+        q:'Como identificar SMS falso de plataforma?',
+        chs:[{t:'Domínio diferente do oficial = golpe',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Prazo curto é pressão pra você não pensar',ic:'⏰',tp:'good',pt:5,pix:{show:false}},{t:'Plataformas nunca cobram taxa de verificação por SMS',ic:'💰',tp:'good',pt:5,pix:{show:false}},{t:'Sempre verifico pelo app — nunca pelo link do SMS',ic:'📱',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Você está protegido!',d:500}],bad:[{f:'sys',t:'⚠️ Troque a senha pelo app oficial agora.',d:500}]},
+        q:'Como proteger suas contas online?',
+        chs:[{t:'Ativo autenticação em dois fatores em tudo',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Nunca acesso contas por links de SMS ou e-mail',ic:'📵',tp:'good',pt:5,pix:{show:false}},{t:'Salvo os apps oficiais na tela inicial do celular',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'Uso senhas diferentes em cada plataforma',ic:'🔑',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Phishing bloqueado!',tx:'Você identificou o domínio falso e verificou pelo app oficial. Plataformas nunca suspendem contas por SMS.',fl:['steampowered.com é o ÚNICO domínio oficial da Steam','30 minutos de prazo é pressão para agir sem pensar','App oficial sempre mostraria o alerta se fosse real']},mid:{tp:'mid',ic:'🤔',tt:'Quase caiu!',tx:'Você hesitou mas a verificação no app confirmou o golpe. Ao ver domínio diferente do oficial, é golpe — sem exceção.',fl:['Qualquer variação no domínio = golpe','App oficial é sempre a fonte de verdade']},bad:{tp:'bad',ic:'😨',tt:'Phishing aplicado!',tx:'Seus dados foram capturados. Troque a senha pelo site oficial e ative autenticação em dois fatores agora.',fl:['steam-security-alert.net não tem nada a ver com a Steam','SMS com link de plataforma = phishing na maioria dos casos']}}
+    },
+    {th:'t-call',ct:{n:'Número Desconhecido',s:'+55 11 97234-8821 • Recebida',av:'❓',cl:'#1c1c1e'},ti:'',
+     intro:[{f:'them',t:'"Aqui é da equipe de segurança do Instagram."',d:800},{f:'them',t:'"Sua conta foi usada para postar conteúdo proibido e será banida em 24 horas."',d:1700},{f:'them',t:'"Para cancelar o banimento, preciso confirmar seus dados agora."',d:2500}],
+     steps:[
+       {ms:[{f:'them',t:'"Preciso do seu e-mail, nome completo e a senha atual para verificar que você é o dono."',d:900}],
+        q:'O que você faz nessa ligação?',
+        chs:[{t:'Forneço os dados — não quero perder a conta',ic:'😰',tp:'bad',pt:0,pix:{show:false}},{t:'Desligo e acesso o Instagram pelo app',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'Peço número oficial para retornar a ligação',ic:'📞',tp:'good',pt:4,pix:{show:false}},{t:'Dou só o e-mail, sem a senha',ic:'📧',tp:'bad',pt:1,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'"Ótimo! Agora o código que chegou no seu celular, por favor."',d:900},{f:'sys',t:'⚠️ Esse é o código de autenticação em dois fatores. Com ele, a conta é deles em segundos.',d:1700}],good:[{f:'sys',t:'✅ No app do Instagram: nenhum aviso de banimento. Tudo normal.',d:700}]},
+        q:'O que você faz agora?',
+        chs:[{t:'Passo o código — quero resolver logo',ic:'🔢',tp:'bad',pt:0,pix:{show:false}},{t:'Confirmo que é golpe e reporto o número',ic:'🚨',tp:'good',pt:5,pix:{show:false}},{t:'Mudo minha senha como precaução',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Ativo verificação em dois fatores no app',ic:'🛡️',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💀 Sua conta Instagram foi sequestrada. Golpistas estão aplicando golpes nos seus seguidores.',d:700}],good:[{f:'sys',t:'✅ Conta segura. Esse golpe afeta centenas de milhares de jovens todo mês.',d:600}]},
+        q:'Como o Instagram REALMENTE avisa sobre problemas?',
+        chs:[{t:'Notificações dentro do próprio aplicativo',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'E-mail do domínio @instagram.com',ic:'📧',tp:'good',pt:5,pix:{show:false}},{t:'NUNCA por ligação telefônica',ic:'📵',tp:'good',pt:5,pix:{show:false}},{t:'NUNCA pedindo sua senha atual',ic:'🔑',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Você está protegido!',d:500}],bad:[{f:'sys',t:'⚠️ Recupere pelo app: Configurações → Suporte → Conta hackeada.',d:500}]},
+        q:'O que fazer agora para proteger suas redes sociais?',
+        chs:[{t:'Ativo autenticação em dois fatores em tudo',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Reviso os apps conectados às minhas contas',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Aviso amigos sobre esse golpe de ligação',ic:'📢',tp:'good',pt:5,pix:{show:false}},{t:'Salvo os contatos oficiais de suporte',ic:'📋',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Golpe de ligação bloqueado!',tx:'Redes sociais NUNCA ligam pedindo senha. Você verificou pelo app e confirmou que era golpe.',fl:['Instagram nunca liga pedindo senha','Código de 2 fatores = chave mestra da conta','App oficial é sempre a fonte de verdade']},mid:{tp:'mid',ic:'🤔',tt:'Você quase perdeu a conta!',tx:'Você deu o e-mail, que é dado demais. Com phishing, nenhum dado em ligações recebidas.',fl:['E-mail já é suficiente para tentativa de invasão','Nenhuma informação em ligações de redes sociais','Desligue imediatamente e cheque no app']},bad:{tp:'bad',ic:'😨',tt:'Conta sequestrada!',tx:'Golpistas usam contas sequestradas para aplicar golpes nos seus seguidores. Recupere pelo app.',fl:['Código de 2 fatores jamais deve ser passado por telefone','Instagram nunca liga — é sempre golpe']}}
+    },
+    {th:'t-wa',ct:{n:'Grupo: Turma 🎓',s:'você, Marcos, Julia e +18',av:'👥',cl:'#128C7E'},ti:'',
+     intro:[{f:'other',t:'Gente olha esse vídeo CHOCANTE do professor de biologia 😱',d:700},{f:'other',t:'É verdade! Vi no TikTok também',d:1200},{f:'other',t:'Manda pra família urgente, não pode deixar passar',d:1700}],
+     steps:[
+       {ms:[{f:'them',t:'[Link] Professor flagrado — URGENTE VER antes de tirar do ar!',d:800,lk:{ic:'📹',dm:'noticias-chocantes.net',tt:'Vídeo EXCLUSIVO',ds:'Compartilhe antes que removam!'}},{f:'them',t:'@você já viu isso??',d:1400}],
+        q:'Alguém no grupo te marca num vídeo "chocante". O que você faz?',
+        chs:[{t:'Clico pra ver — parece importante',ic:'▶️',tp:'bad',pt:0,pix:{show:false}},{t:'Verifico o domínio antes de clicar',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Pergunto se alguém verificou a fonte',ic:'❓',tp:'good',pt:4,pix:{show:false}},{t:'Encaminho pra família sem ver',ic:'📤',tp:'bad',pt:0,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ O site pediu permissão de câmera e contatos. Vírus instalado em segundo plano.',d:600}],good:[{f:'sys',t:'🔍 Domínio criado há 2 dias. Nenhum veículo jornalístico sério cobriu essa história.',d:700},{f:'them',t:'Para de ser chato e clica logo!',d:1400}]},
+        q:'O que você responde no grupo?',
+        chs:[{t:'Explico que é fake e mostro os sinais',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Peço para não repassar até verificar',ic:'✋',tp:'good',pt:5,pix:{show:false}},{t:'Clico mesmo assim — talvez seja real',ic:'▶️',tp:'bad',pt:0,pix:{show:false}},{t:'Saio do grupo sem falar nada',ic:'🚪',tp:'mid',pt:1,pix:{show:false}}]},
+       {ms:{good:[{f:'other',t:'Nossa, obrigada por avisar! Ia mandar pra minha mãe 😅',d:800}],bad:[{f:'sys',t:'⚠️ Seu celular foi comprometido. Seus contatos receberam spam automaticamente.',d:700}]},
+        q:'Como identificar fake news com vídeos em grupos?',
+        chs:[{t:'Domínio desconhecido = nunca clicar',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Buscar no Google se outros veículos publicaram',ic:'🌐',tp:'good',pt:5,pix:{show:false}},{t:'URGENTE + EXCLUSIVO + CHOCANTE = clickbait suspeito',ic:'⚠️',tp:'good',pt:5,pix:{show:false}},{t:'Verificar data de criação do site',ic:'📅',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'✅ Você educou o grupo inteiro! Cada pessoa avisada protege dezenas.',d:500}],bad:[{f:'sys',t:'⚠️ A fake news se espalhou. Várias pessoas foram enganadas.',d:500}]},
+        q:'Por que avisar o grupo é tão importante?',
+        chs:[{t:'Uma pessoa informada pode proteger dezenas',ic:'👥',tp:'good',pt:5,pix:{show:false}},{t:'Silêncio deixa outros vulneráveis',ic:'🔇',tp:'good',pt:5,pix:{show:false}},{t:'Desinformação se espalha pelo silêncio de quem sabe',ic:'📢',tp:'good',pt:5,pix:{show:false}},{t:'Ensinar a verificar é mais eficaz que só avisar',ic:'📚',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Fake news parada!',tx:'Você não só se protegeu como educou o grupo. Cada pessoa informada protege dezenas de outras.',fl:['Domínio criado recentemente = red flag imediato','URGENTE/EXCLUSIVO/CHOCANTE são gatilhos de clickbait','Verificar no Google leva 30 segundos']},mid:{tp:'mid',ic:'🤔',tt:'Você não clicou, mas ficou em silêncio!',tx:'Bom instinto pessoal, mas avisar o grupo seria ainda melhor. O silêncio de quem sabe deixa outros vulneráveis.',fl:['Avisar o grupo protege dezenas de pessoas']},bad:{tp:'bad',ic:'😨',tt:'Vírus e fake news espalhados!',tx:'Dois problemas de uma vez. Domínios desconhecidos com conteúdo "urgente" nunca devem ser clicados.',fl:['Domínio criado recentemente = sinal imediato de golpe','Antes de clicar: existe em outros sites confiáveis?']}}
+    }
+  ],
+  adulto:[
+    {th:'t-call',ct:{n:'0800 123 4567',s:'Bradesco Segurança • Recebida',av:'🏦',cl:'#cc0000'},ti:'',
+     intro:[{f:'them',t:'"Bom dia! Central de segurança do Bradesco."',d:700},{f:'them',t:'"Identificamos uma compra suspeita de R$2.347,00 no seu cartão."',d:1600},{f:'them',t:'"Para cancelar e proteger sua conta, preciso confirmar alguns dados."',d:2400}],
+     steps:[
+       {ms:[{f:'them',t:'"Confirme os 4 últimos dígitos do cartão e seu token de segurança. É urgente para não perder o prazo de cancelamento."',d:900}],
+        q:'O que você faz?',
+        chs:[{t:'Confirmo os dados — quero cancelar a compra',ic:'😰',tp:'bad',pt:0,pix:{show:false}},{t:'Desligo e ligo no número do verso do meu cartão',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Peço nome completo e protocolo do atendente',ic:'📋',tp:'mid',pt:2,pix:{show:false}},{t:'Digo que vou ao banco pessoalmente',ic:'🏦',tp:'good',pt:4,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'"Perfeito! Agora preciso do código que chegou no seu celular para finalizar."',d:800},{f:'sys',t:'⚠️ Com esse código, qualquer valor pode ser transferido via Pix instantaneamente.',d:1600}],good:[{f:'sys',t:'✅ Banco confirma: nenhuma compra suspeita. Era golpe do falso banco.',d:700}]},
+        q:'O que você faz agora?',
+        chs:[{t:'Passo o código — quero resolver logo',ic:'🔢',tp:'bad',pt:0,pix:{show:true,amt:'R$ 8.500,00',bank:'Bradesco',who:'Pix enviado para: ***789-00',learn:'O token é a chave mestra das transferências. Com ele, golpistas transferem tudo via Pix em segundos.'}},{t:'Desligo — identifiquei o golpe',ic:'📵',tp:'good',pt:5,pix:{show:false}},{t:'Registro ocorrência e confirmo com banco oficial',ic:'🚨',tp:'good',pt:5,pix:{show:false}},{t:'Aviso família sobre esse golpe',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💸 R$8.500,00 transferidos via Pix em segundos. Dinheiro foi para criminosos.',d:700}],good:[{f:'sys',t:'✅ Seu dinheiro está seguro. Você identificou o Golpe do Falso Banco.',d:600}]},
+        q:'Quais sinais confirmam que era golpe?',
+        chs:[{t:'Banco NUNCA pede token em ligações recebidas',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Número 0800 pode ser falsificado (caller spoofing)',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Urgência do "prazo de cancelamento" é pressão falsa',ic:'⏰',tp:'good',pt:5,pix:{show:false}},{t:'Banco nunca cancela cartão se você não atender',ic:'💳',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Salve agora o número oficial do seu banco.',d:500}],bad:[{f:'sys',t:'⚠️ Registre boletim de ocorrência imediatamente.',d:500}]},
+        q:'Como proteger seu dinheiro do Golpe do Falso Banco?',
+        chs:[{t:'Salvo o número oficial do banco no celular',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'Sempre desligo e ligo EU MESMO para confirmar',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Nunca passo token em ligações recebidas',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Ativo notificações de transações no app',ic:'🔔',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Golpe do Falso Banco bloqueado!',tx:'Você protegeu seu dinheiro. Bancos NUNCA ligam pedindo token. Sempre religue você mesmo pelo número oficial.',fl:['Token jamais é solicitado em ligações recebidas','Número 0800 pode ser falsificado por qualquer golpista','Urgência falsa é a principal arma desse golpe']},mid:{tp:'mid',ic:'🤔',tt:'Você deu dados desnecessários!',tx:'Nenhum dado deve ser confirmado em ligações de banco — nem protocolo. Desligue e ligue no número oficial.',fl:['Nenhum dado em ligações recebidas — nem nome','Desligue e ligue no verso do cartão']},bad:{tp:'bad',ic:'😨',tt:'Golpe do Falso Banco aplicado!',tx:'Você perdeu R$8.500. Registre boletim de ocorrência e ligue para o banco no número oficial.',fl:['Token = chave mestra das transferências via Pix','Pix vai em segundos — sem volta automática']}}
+    },
+    {th:'t-wa',ct:{n:'Lucas 🔧 (filho)',s:'última vez hoje às 9:41',av:'👨',cl:'#25D366'},ti:'📹 📞',
+     intro:[{f:'them',t:'Pai/Mãe, tô com um problema sério',d:700},{f:'them',t:'Esse é meu número novo, tive que trocar o chip',d:1300},{f:'them',t:'Tô no cartório agora, situação urgente',d:1800}],
+     steps:[
+       {ms:[{f:'them',t:'Preciso de R$1.500 Pix agora, meu cartão tá bloqueado e não consigo resolver sem',d:900},{f:'them',t:'Não liga não que tô em reunião com o advogado, só manda o Pix que te explico depois',d:1600}],
+        q:'Seu "filho" pede R$1.500 de número novo e pede para NÃO ligar. O que você faz?',
+        chs:[{t:'Mando o Pix — ele está em apuros',ic:'💸',tp:'bad',pt:0,pix:{show:true,amt:'R$ 1.500,00',bank:'Pix',who:'CPF: ***456-**',learn:'Você mandou dinheiro para um golpista. O filho real estava em casa. Esse golpe lesou R$1,7 bilhão no Brasil em 2023.'}},{t:'Ligo agora para o número antigo dele',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Pergunto algo que só o filho real saberia',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Falo com outro familiar para confirmar',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'Manda no CPF aqui. Obrigado demais!! 🙏',d:800}],good:[{f:'them',t:'Não posso atender!! Tô na reunião! São 20 minutos e o cartório fecha',d:900}]},
+        q:'Ele insiste que não pode ligar. O que você faz?',
+        chs:[{t:'Mando mesmo assim — ele está implorando',ic:'😢',tp:'bad',pt:0,pix:{show:true,amt:'R$ 1.500,00',bank:'Pix',who:'CPF: ***456-**',learn:'Você enviou para um golpista. Ligue agora para o número antigo do seu filho.'}},{t:'Só mando após falar com ele por voz',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Ligo para outro familiar confirmar',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}},{t:'Peço para ele mandar uma foto agora',ic:'📸',tp:'good',pt:4,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💸 Você enviou R$1.500. O contato sumiu.',d:600},{f:'sys',t:'Você ligou para o filho real. Ele estava em casa, sem nenhum problema.',d:1400}],good:[{f:'sys',t:'✅ Você ligou para o filho real. Ele estava em casa assistindo TV.',d:600}]},
+        q:'Quais são os sinais do Golpe do WhatsApp?',
+        chs:[{t:'"Número novo" — golpistas sempre trocam o número',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'"Não liga" — para impedir que você confirme',ic:'📵',tp:'good',pt:5,pix:{show:false}},{t:'Urgência + prazo curto para pressionar',ic:'⏰',tp:'good',pt:5,pix:{show:false}},{t:'Pix imediato antes de qualquer verificação',ic:'💸',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Esse golpe causou R$1,7 bilhão em prejuízos no Brasil em 2023.',d:500}],bad:[{f:'sys',t:'⚠️ Registre boletim de ocorrência. Alerte outros familiares agora.',d:500}]},
+        q:'Como proteger a família desse golpe?',
+        chs:[{t:'Combinar uma "palavra secreta de emergência" com filhos',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Nunca mandar dinheiro sem confirmar por voz',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Salvar sempre os números antigos mesmo após troca',ic:'📋',tp:'good',pt:5,pix:{show:false}},{t:'Avisar todos os familiares sobre esse golpe',ic:'📢',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Golpe do WhatsApp bloqueado!',tx:'A regra de ouro: nunca mande dinheiro sem confirmar por voz. Uma ligação de 30 segundos protege tudo.',fl:['"Número novo" é sempre o começo desse golpe','"Não liga" existe para impedir que você confirme','30 segundos de ligação protege R$1.500']},mid:{tp:'mid',ic:'🤔',tt:'Você hesitou mas resistiu!',tx:'Qualquer urgência pode esperar 2 minutos para uma ligação. Nunca Pix sem confirmar por voz.',fl:['Confirmação por voz é inegociável antes de qualquer Pix']},bad:{tp:'bad',ic:'😨',tt:'Golpe do WhatsApp!',tx:'R$1,7 bilhão perdido nesse golpe em 2023. Registre boletim. Nunca mande Pix sem confirmar por voz.',fl:['"Número novo" + "não liga" = 100% golpe','Pix enviado não tem volta automática']}}
+    },
+    {th:'t-email',ct:{n:'Receita Federal',s:'Mensagem de e-mail',av:'🏛️',cl:'#1a73e8'},ti:'',
+     intro:[{f:'them',t:'De: atendimento@receita-federal-gov.com.br',d:500},{f:'them',t:'Assunto: ⚠️ CPF IRREGULAR — Prazo: 48 horas',d:900},{f:'them',t:'Identificamos irregularidades que podem resultar na suspensão do seu CPF.',d:1700}],
+     steps:[
+       {ms:[{f:'them',t:'Para regularizar, baixe o auto de infração:',d:800},{f:'them',t:'receita-regularizacao.gov.com.br/documento',d:1200,lk:{ic:'📄',dm:'receita-regularizacao.gov.com.br',tt:'Receita — Auto de Infração',ds:'Download — Prazo 48 horas'}}],
+        q:'Você recebeu esse e-mail. O que você faz?',
+        chs:[{t:'Clico no link — não quero ter o CPF suspenso',ic:'😰',tp:'bad',pt:0,pix:{show:false}},{t:'Verifico o domínio do remetente',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Acesso o site oficial da Receita diretamente',ic:'🌐',tp:'good',pt:5,pix:{show:false}},{t:'Ligo para a Receita no 146',ic:'📞',tp:'good',pt:4,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ Um arquivo .exe foi baixado. Malware instalado — monitorando suas senhas bancárias.',d:700}],good:[{f:'sys',t:'🔍 Domínio correto: receita.fazenda.gov.br. O e-mail usa "gov.com.br" — domínio falso. No site oficial: nada no seu CPF.',d:800}]},
+        q:'Confirmado: era golpe. O que você faz?',
+        chs:[{t:'Marco como spam e reporto à Receita real',ic:'🚨',tp:'good',pt:5,pix:{show:false}},{t:'Faço varredura no computador',ic:'🛡️',tp:'good',pt:5,pix:{show:false}},{t:'Salvo o domínio oficial nos favoritos',ic:'⭐',tp:'good',pt:5,pix:{show:false}},{t:'Aviso amigos e família',ic:'📢',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ Senhas bancárias podem ter sido capturadas. Troque todas agora.',d:700}],good:[{f:'sys',t:'✅ Você está protegido. E-mails falsos da Receita afetam milhões de brasileiros.',d:600}]},
+        q:'Como identificar e-mail falso de órgão do governo?',
+        chs:[{t:'Domínio oficial da Receita: receita.fazenda.gov.br',ic:'🌐',tp:'good',pt:5,pix:{show:false}},{t:'Governo manda carta física — não link por e-mail',ic:'🏛️',tp:'good',pt:5,pix:{show:false}},{t:'CPF não é suspenso por e-mail — não existe na lei',ic:'📋',tp:'good',pt:5,pix:{show:false}},{t:'48h de prazo é pressão para você não verificar',ic:'⏰',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Salve nos favoritos: eCAC.receita.fazenda.gov.br',d:500}],bad:[{f:'sys',t:'⚠️ Escaneie o computador com antivírus agora.',d:500}]},
+        q:'Qual é a forma correta de verificar sua situação fiscal?',
+        chs:[{t:'Acesso o e-CAC: eCAC.receita.fazenda.gov.br',ic:'🌐',tp:'good',pt:5,pix:{show:false}},{t:'App Meu Imposto de Renda',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'Vou pessoalmente a uma agência',ic:'🏛️',tp:'good',pt:5,pix:{show:false}},{t:'NUNCA por links de e-mail ou SMS',ic:'🚫',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Phishing da Receita bloqueado!',tx:'Você identificou o domínio falso e verificou no site oficial. Documentos fiscais nunca chegam por link.',fl:['Domínio oficial: receita.fazenda.gov.br','CPF não é suspenso por e-mail — não existe na lei','Carta física é o canal real da Receita Federal']},mid:{tp:'mid',ic:'🤔',tt:'Você não clicou, bom!',tx:'Aprenda o domínio oficial e salve nos favoritos para acessar diretamente.',fl:['receita.fazenda.gov.br — salve nos favoritos agora']},bad:{tp:'bad',ic:'😨',tt:'Malware instalado!',tx:'Senhas bancárias podem estar comprometidas. Faça varredura com antivírus e troque todas as senhas.',fl:['Arquivo .exe de e-mail = malware clássico','receita-regularizacao.gov.com.br não é governo']}}
+    },
+    {th:'t-wa',ct:{n:'Empresa RH 💼',s:'Oportunidade de trabalho',av:'💼',cl:'#0088cc'},ti:'',
+     intro:[{f:'them',t:'Boa tarde! Vi seu currículo no LinkedIn.',d:700},{f:'them',t:'Vaga home office, R$4.200/mês, sem experiência necessária.',d:1400},{f:'them',t:'Interesse? Processo rápido.',d:1800}],
+     steps:[
+       {ms:[{f:'them',t:'Para garantir sua vaga, precisamos de R$79,90 de cadastro no sistema de RH. É padrão da empresa.',d:900},{f:'them',t:'Pode ser Pix. Após confirmar, agendam sua entrevista.',d:1500}],
+        q:'A empresa pede R$79,90 de "cadastro". O que você faz?',
+        chs:[{t:'Pago — parece pouco pelo salário que vou ganhar',ic:'💰',tp:'bad',pt:0,pix:{show:true,amt:'R$ 79,90',bank:'Pix',who:'Chave: 11987654321',learn:'Você perdeu R$79,90. Mas golpistas cobrarão mais ainda. Nunca pague para conseguir um emprego.'}},{t:'Pesquiso a empresa no Google e CNPJ.com',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Pergunto se posso pagar na entrevista presencial',ic:'❓',tp:'mid',pt:2,pix:{show:false}},{t:'Recuso — empresa nunca cobra candidato',ic:'🚫',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'Pagamento confirmado! Agora precisa de R$150 para o treinamento obrigatório.',d:900},{f:'sys',t:'⚠️ Os pedidos de dinheiro vão aumentar até você perceber o golpe.',d:1600}],good:[{f:'sys',t:'🔍 "TechWork RH" não existe no CNPJ. Empresa fantasma confirmada.',d:700}]},
+        q:'O que você faz agora?',
+        chs:[{t:'Pago o treinamento — já investi os R$79,90',ic:'💸',tp:'bad',pt:0,pix:{show:true,amt:'R$ 229,90',bank:'Pix',who:'Chave: 11987654321',learn:'Você perdeu R$229,90 no total. O contato sumiu. Nunca pague para conseguir emprego.'}},{t:'Encerro contato e denuncio no Procon',ic:'🚨',tp:'good',pt:5,pix:{show:false}},{t:'Aviso outros desempregados sobre esse golpe',ic:'📢',tp:'good',pt:5,pix:{show:false}},{t:'Reporto o perfil na plataforma',ic:'🚨',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💸 Você pagou R$229,90 no total. O contato sumiu.',d:700}],good:[{f:'sys',t:'✅ Você não perdeu dinheiro. Esse golpe explora pessoas desempregadas.',d:600}]},
+        q:'Quais são os sinais de golpe de emprego falso?',
+        chs:[{t:'Pagamento ANTES de ser contratado = sempre golpe',ic:'💰',tp:'good',pt:5,pix:{show:false}},{t:'Salário alto para "sem experiência" é isca',ic:'💼',tp:'good',pt:5,pix:{show:false}},{t:'CNPJ inválido ou empresa inexistente no Google',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Contato inicial pelo WhatsApp sem processo seletivo',ic:'📱',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Para verificar empresas: cnpj.com.br — gratuito.',d:500}],bad:[{f:'sys',t:'⚠️ Denuncie: Procon, Polícia Civil, Ministério do Trabalho.',d:500}]},
+        q:'Como confirmar se uma empresa existe?',
+        chs:[{t:'CNPJ no cnpj.com.br — gratuito e confiável',ic:'🌐',tp:'good',pt:5,pix:{show:false}},{t:'Nome da empresa + "golpe" no Google',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'LinkedIn e site oficial da empresa',ic:'💼',tp:'good',pt:5,pix:{show:false}},{t:'Empresa séria NUNCA cobra do candidato',ic:'✅',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Golpe de emprego identificado!',tx:'Nenhuma empresa séria cobra do candidato. Você verificou o CNPJ e bloqueou antes de perder dinheiro.',fl:['Pagamento antes da contratação = 100% golpe','CNPJ inválido confirma que a empresa não existe']},mid:{tp:'mid',ic:'🤔',tt:'Você quase caiu!',tx:'A regra é clara: primeiro pagamento já é suficiente para sair e reportar.',fl:['Primeira cobrança já basta para encerrar o contato']},bad:{tp:'bad',ic:'😨',tt:'Golpe de emprego!',tx:'Denuncie no Procon e Polícia Civil. Verifique sempre o CNPJ antes de qualquer contato.',fl:['Empresa sem CNPJ válido não existe legalmente','Nunca pague nenhum valor antes de ser contratado']}}
+    },
+    {th:'t-sms',ct:{n:'Nubank',s:'Mensagem de texto',av:'💜',cl:'#8a05be'},ti:'',
+     intro:[{f:'them',t:'[Nubank] Sua conta foi BLOQUEADA por atividade suspeita.',d:700},{f:'them',t:'Acesse: nubank-desbloqueio.net/conta',d:1400,lk:{ic:'💜',dm:'nubank-desbloqueio.net',tt:'Nubank — Desbloqueio',ds:'Regularize em 2 horas'}},{f:'them',t:'Prazo: 2 horas. Após esse prazo, conta cancelada.',d:2100}],
+     steps:[
+       {ms:[],q:'Você recebe esse SMS do "Nubank". O que você faz?',
+        chs:[{t:'Clico no link — não quero perder a conta',ic:'😰',tp:'bad',pt:0,pix:{show:false}},{t:'Abro o app do Nubank diretamente',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'"nubank-desbloqueio.net" não é o Nubank real',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Ligo para o suporte do Nubank',ic:'📞',tp:'good',pt:4,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ O site pediu CPF, data de nascimento, senha e número do cartão.',d:700}],good:[{f:'sys',t:'✅ No app Nubank: sua conta está completamente normal. Nenhum bloqueio.',d:700},{f:'them',t:'Novo SMS: "Conta cancelada em 30 minutos! URGENTE"',d:1500}]},
+        q:'Como você reage ao segundo SMS ainda mais urgente?',
+        chs:[{t:'Ignoro completamente — já confirmei que é golpe',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Reporto o número como spam',ic:'🚨',tp:'good',pt:5,pix:{show:false}},{t:'Cedo à pressão e clico no link',ic:'😰',tp:'bad',pt:0,pix:{show:true,amt:'R$ 3.200,00',bank:'Nubank',who:'Crédito aberto em seu nome',learn:'Com seus dados, golpistas abriram crédito no seu nome. Bloqueie o cartão pelo app agora.'}},{t:'Verifico no app mais uma vez',ic:'📱',tp:'mid',pt:3,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💸 Com seus dados, golpistas abriram crédito em seu nome.',d:700}],good:[{f:'sys',t:'✅ Você fez tudo certo. O Nubank usa APENAS nubank.com.br.',d:600}]},
+        q:'Qual é o domínio oficial do Nubank?',
+        chs:[{t:'nubank.com.br — único domínio oficial',ic:'🌐',tp:'good',pt:5,pix:{show:false}},{t:'Qualquer outra variação = golpe',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Nubank resolve tudo pelo app — nunca por SMS',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'Conta não é cancelada em 2 horas — não existe',ic:'⏰',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Você está protegido!',d:500}],bad:[{f:'sys',t:'⚠️ Bloqueie cartões pelo app e registre boletim.',d:500}]},
+        q:'Como proteger suas contas digitais?',
+        chs:[{t:'Ativo biometria no app do banco',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Nunca acesso banco por links de SMS',ic:'📵',tp:'good',pt:5,pix:{show:false}},{t:'Verifico o domínio antes de qualquer acesso',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Monitoro transações no app diariamente',ic:'👁️',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Phishing bancário bloqueado!',tx:'Você identificou o domínio falso e verificou pelo app. Bancos digitais resolvem tudo pelo app — nunca por SMS.',fl:['nubank.com.br — nada diferente disso','App mostrando tudo normal = SMS é mentira']},mid:{tp:'mid',ic:'🤔',tt:'Você hesitou mas não caiu!',tx:'Quando o app confirma que está tudo bem, descarte qualquer SMS urgente.',fl:['App oficial = fonte de verdade absoluta']},bad:{tp:'bad',ic:'😨',tt:'Dados comprometidos!',tx:'Bloqueie cartões pelo app oficial imediatamente e registre boletim de ocorrência.',fl:['nubank-desbloqueio.net não tem relação com o Nubank']}}
+    }
+  ],
+  idoso:[
+    {th:'t-wa',ct:{n:'Mariana ❤️ (filha)',s:'online',av:'👩',cl:'#25D366'},ti:'📹 📞',
+     intro:[{f:'them',t:'Mãe/Pai!! Esse é meu número novo',d:700},{f:'them',t:'Tive que trocar o chip, problema com a operadora',d:1300},{f:'them',t:'Tô passando por uma situação muito chata 😢',d:1800}],
+     steps:[
+       {ms:[{f:'them',t:'Tô no cartório regularizando uma documentação e meu cartão tá bloqueado',d:900},{f:'them',t:'Precisa de R$1.800 agora. Não liga que tô com o advogado, só manda o Pix',d:1600}],
+        q:'Sua "filha" pede R$1.800 de número desconhecido e pede para NÃO ligar. O que você faz?',
+        chs:[{t:'Mando o Pix — ela está em apuros',ic:'💸',tp:'bad',pt:0,pix:{show:true,amt:'R$ 1.800,00',bank:'Pix',who:'CPF: ***654-**',learn:'Você mandou para um golpista. A filha real estava em casa. Esse golpe lesou R$1,7 bilhão em 2023.'}},{t:'Ligo agora para o número antigo dela',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Peço uma foto do rosto dela agora',ic:'📸',tp:'good',pt:5,pix:{show:false}},{t:'Falo com outro familiar para confirmar',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'Manda no CPF 123.456.789-00. Obrigada demais!! 🙏',d:800}],good:[{f:'them',t:'Não posso atender!! Tô na reunião! São 20 minutos e o cartório fecha. POR FAVOR',d:900}]},
+        q:'Ela pressiona mais. O que você faz?',
+        chs:[{t:'Mando mesmo assim — ela está implorando',ic:'😢',tp:'bad',pt:0,pix:{show:true,amt:'R$ 1.800,00',bank:'Pix',who:'CPF: ***654-**',learn:'Você mandou para um golpista. A filha real estava em casa. Ligue agora para o número antigo dela.'}},{t:'Só envio após falar com ela por voz ou vídeo',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Ligo para outro familiar confirmar',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}},{t:'Peço que ela mande uma foto do rosto agora',ic:'📸',tp:'good',pt:4,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💸 Você enviou R$1.800. O contato sumiu imediatamente.',d:600},{f:'sys',t:'Você ligou para a filha real. Ela estava em casa, sem nenhum problema.',d:1400}],good:[{f:'sys',t:'✅ Você ligou para a filha real. Ela estava em casa assistindo TV.',d:600}]},
+        q:'Qual é a defesa mais simples e eficaz?',
+        chs:[{t:'Ligar para o número antigo antes de qualquer transferência',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Combinar uma "palavra secreta de emergência" com filhos',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Nunca confiar em pedido de "não liga agora"',ic:'📵',tp:'good',pt:5,pix:{show:false}},{t:'Confirmar com outro familiar antes de Pix',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Esse golpe causou R$1,7 bilhão de prejuízo no Brasil.',d:500}],bad:[{f:'sys',t:'⚠️ Registre boletim na Delegacia de Crimes Digitais.',d:500}]},
+        q:'Como proteger toda a família desse golpe?',
+        chs:[{t:'Avisar filhos, netos e cônjuge sobre essa tática',ic:'📢',tp:'good',pt:5,pix:{show:false}},{t:'Combinar palavra secreta de emergência em família',ic:'🔐',tp:'good',pt:5,pix:{show:false}},{t:'Nunca fazer Pix sem confirmar por voz',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Desconfiar sempre de "número novo" + dinheiro urgente',ic:'🚩',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Golpe do WhatsApp bloqueado!',tx:'Uma ligação de 30 segundos protegeu R$1.800. Essa é a regra de ouro: nunca Pix sem confirmar por voz.',fl:['"Número novo" é sempre o começo desse golpe','"Não liga" existe para impedir que você confirme','30 segundos de ligação protege tudo']},mid:{tp:'mid',ic:'🤔',tt:'Você resistiu à pressão!',tx:'Qualquer urgência pode esperar 2 minutos para uma ligação. Nunca Pix sem confirmar por voz.',fl:['Confirmação por voz é inegociável — sempre']},bad:{tp:'bad',ic:'😨',tt:'Golpe do WhatsApp!',tx:'Registre boletim de ocorrência. Alerte outros familiares agora. Sua filha real está bem.',fl:['"Número novo" + "não liga" = 100% golpe','Pix enviado não tem volta automática']}}
+    },
+    {th:'t-call',ct:{n:'135 — INSS',s:'Central de Benefícios • Recebida',av:'🏛️',cl:'#1c4fa0'},ti:'',
+     intro:[{f:'them',t:'"Bom dia! Central de benefícios do INSS."',d:700},{f:'them',t:'"Sua prova de vida não foi feita. Aposentadoria será suspensa hoje."',d:1600},{f:'them',t:'"Para regularizar agora por telefone, preciso de alguns dados."',d:2300}],
+     steps:[
+       {ms:[{f:'them',t:'"Preciso do número do seu benefício, CPF, data de nascimento e a senha do banco para liberar o pagamento."',d:900}],
+        q:'O que você faz?',
+        chs:[{t:'Forneço os dados — não quero perder a aposentadoria',ic:'😰',tp:'bad',pt:0,pix:{show:false}},{t:'Desligo e ligo para o 135 eu mesmo',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Digo que só falo pessoalmente em agência',ic:'🏛️',tp:'good',pt:4,pix:{show:false}},{t:'Pergunto nome e matrícula do atendente',ic:'📋',tp:'mid',pt:2,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'"Ótimo! Agora vá ao caixa eletrônico e siga minhas instruções para liberar o pagamento."',d:900},{f:'sys',t:'⚠️ Você vai fazer uma transferência pensando que está liberando sua aposentadoria.',d:1700}],good:[{f:'sys',t:'✅ Ligou no 135 real. Atendente confirma: nenhum bloqueio na sua aposentadoria.',d:700}]},
+        q:'O que você faz?',
+        chs:[{t:'Vou ao caixa seguindo as instruções',ic:'🏧',tp:'bad',pt:0,pix:{show:true,amt:'R$ 3.200,00',bank:'Caixa Eletrônico',who:'Transferência instruída por telefone',learn:'Você perdeu R$3.200. O INSS nunca instrui operações em caixa eletrônico.'}},{t:'Desligo e confirmo com filho/familiar',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}},{t:'Confirmo que é golpe e registro ocorrência',ic:'🚨',tp:'good',pt:5,pix:{show:false}},{t:'Vou pessoalmente a uma agência do INSS',ic:'🏛️',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💸 No caixa, você transferiu R$3.200 pensando ser para liberar a aposentadoria.',d:700}],good:[{f:'sys',t:'✅ Sua aposentadoria está intacta. O INSS nunca faz prova de vida por telefone.',d:600}]},
+        q:'O que o INSS NUNCA pede por telefone?',
+        chs:[{t:'Senha do banco — nunca, jamais',ic:'🔑',tp:'good',pt:5,pix:{show:false}},{t:'Instruções em caixa eletrônico',ic:'🏧',tp:'good',pt:5,pix:{show:false}},{t:'Qualquer transferência de valor',ic:'💸',tp:'good',pt:5,pix:{show:false}},{t:'Prova de vida — só no app ou agência',ic:'🏛️',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Aposentadoria segura!',d:500}],bad:[{f:'sys',t:'⚠️ Registre boletim de ocorrência imediatamente.',d:500}]},
+        q:'Como a prova de vida do INSS funciona de verdade?',
+        chs:[{t:'Pelo app Meu INSS no celular',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'Pessoalmente em agência do INSS',ic:'🏛️',tp:'good',pt:5,pix:{show:false}},{t:'Por biometria nos bancos conveniados',ic:'👆',tp:'good',pt:5,pix:{show:false}},{t:'NUNCA por telefone pedindo senha',ic:'📵',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Golpe do INSS bloqueado!',tx:'O INSS nunca liga pedindo senha bancária. Uma ligação no 135 confirmou que era golpe.',fl:['INSS nunca pede senha de banco por telefone','Prova de vida: app Meu INSS ou agência — nunca telefone']},mid:{tp:'mid',ic:'🤔',tt:'Você desconfiou!',tx:'Para o futuro: ao menor sinal de pedido de senha ou caixa eletrônico, desligue imediatamente.',fl:['Qualquer pedido de senha = desligue na hora']},bad:{tp:'bad',ic:'😨',tt:'Golpe do Caixa Eletrônico!',tx:'Registre boletim de ocorrência imediatamente. O INSS nunca instrui operações em caixa.',fl:['INSS nunca instrui operações em caixa','Aposentadoria não é bloqueada por ligação não atendida']}}
+    },
+    {th:'t-wa',ct:{n:'Farmácia Popular 💊',s:'',av:'💊',cl:'#128C7E'},ti:'',
+     intro:[{f:'them',t:'Bom dia! Aqui é da Farmácia Popular.',d:700},{f:'them',t:'Estamos no Programa Farmácia Popular do Governo Federal.',d:1400},{f:'them',t:'Você tem direito a medicamentos GRATUITOS para diabetes e hipertensão.',d:2000}],
+     steps:[
+       {ms:[{f:'them',t:'Para cadastrar e receber em casa, preciso de: nome, data de nascimento, CPF, número do plano de saúde e operadora.',d:900}],
+        q:'A "farmácia" pede seus dados para cadastro. O que você faz?',
+        chs:[{t:'Forneço tudo — os medicamentos são caros',ic:'💊',tp:'bad',pt:0,pix:{show:false}},{t:'Ligo para a farmácia pelo número oficial',ic:'📞',tp:'good',pt:5,pix:{show:false}},{t:'Consulto um familiar antes de responder',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}},{t:'Verifico no site do Ministério da Saúde',ic:'🌐',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'them',t:'Obrigado! Agora só precisa do número do cartão de crédito para o frete de R$8,90.',d:800},{f:'sys',t:'⚠️ Mais dados sendo pedidos. Escalada clássica de golpe.',d:1500}],good:[{f:'sys',t:'🔍 O número não pertence a nenhuma farmácia real. O programa real é presencial.',d:800}]},
+        q:'Confirmado como golpe. O que você faz?',
+        chs:[{t:'Bloqueio e reporto o contato',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Pago o frete — R$8,90 é barato',ic:'💳',tp:'bad',pt:0,pix:{show:true,amt:'R$ 8,90',bank:'Cartão de crédito',who:'Dados do cartão capturados',learn:'Com os dados do cartão, golpistas fizeram compras no seu nome. Bloqueie o cartão pelo app agora.'}},{t:'Aviso vizinhos e conhecidos',ic:'📢',tp:'good',pt:5,pix:{show:false}},{t:'Ligo para a farmácia real para avisá-los',ic:'📞',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💳 Dados do cartão capturados. Compras fraudulentas em seu nome.',d:700}],good:[{f:'sys',t:'✅ Seus documentos e plano de saúde estão seguros.',d:600}]},
+        q:'Quais dados NUNCA devem ser enviados por WhatsApp?',
+        chs:[{t:'Número do plano de saúde',ic:'🏥',tp:'good',pt:5,pix:{show:false}},{t:'CPF e data de nascimento juntos',ic:'📋',tp:'good',pt:5,pix:{show:false}},{t:'Número e senha do cartão de crédito',ic:'💳',tp:'good',pt:5,pix:{show:false}},{t:'Nenhum dado pessoal para desconhecido',ic:'🚫',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Seus dados são seu bem mais valioso!',d:500}],bad:[{f:'sys',t:'⚠️ Bloqueie o cartão pelo app do banco agora.',d:500}]},
+        q:'Como o Farmácia Popular funciona de verdade?',
+        chs:[{t:'Medicamentos retirados nas farmácias credenciadas',ic:'💊',tp:'good',pt:5,pix:{show:false}},{t:'Cadastro feito presencialmente com receita médica',ic:'📋',tp:'good',pt:5,pix:{show:false}},{t:'Nunca por WhatsApp — sempre presencialmente',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Site oficial: gov.br/saude',ic:'🌐',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Roubo de dados bloqueado!',tx:'Seus dados são mais valiosos que qualquer medicamento. Farmácia Popular nunca funciona por WhatsApp.',fl:['Farmácia Popular: presencial com receita médica','CPF + plano de saúde = fraude médica possível']},mid:{tp:'mid',ic:'🤔',tt:'Você parou antes do cartão!',tx:'Mas você já deu dados importantes. Nunca forneça CPF ou plano de saúde por WhatsApp de desconhecido.',fl:['Pare ao PRIMEIRO pedido de dado']},bad:{tp:'bad',ic:'😨',tt:'Roubo de dados!',tx:'Ligue para seu plano de saúde agora para bloquear uso indevido e cancele o cartão pelo app.',fl:['Plano de saúde permite consultas em seu nome','CPF + data = fraudes de crédito']}}
+    },
+    {th:'t-sms',ct:{n:'Banco do Brasil',s:'Mensagem de texto',av:'🏦',cl:'#FFD700'},ti:'',
+     intro:[{f:'them',t:'BB: Seu cartão foi BLOQUEADO por tentativa de fraude.',d:700},{f:'them',t:'Nosso técnico irá à sua residência hoje para substituição segura do cartão.',d:1500},{f:'them',t:'Confirme seu endereço ou ligue: (11) 94521-8834',d:2200}],
+     steps:[
+       {ms:[],q:'Você recebeu esse SMS do "Banco do Brasil". O que você faz?',
+        chs:[{t:'Ligo para o número — quero desbloquear o cartão',ic:'📞',tp:'bad',pt:0,pix:{show:false}},{t:'Ligo para o 4004-0001 (número oficial do BB)',ic:'💳',tp:'good',pt:5,pix:{show:false}},{t:'Vou pessoalmente à agência do banco',ic:'🏦',tp:'good',pt:5,pix:{show:false}},{t:'Consulto um familiar antes',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ O número é de um celular de golpistas.',d:600},{f:'them',t:'"Bom dia! Para agilizar, confirme os dados do cartão e sua senha."',d:1400}],good:[{f:'sys',t:'✅ Banco confirma: nenhum bloqueio no cartão. SMS falso confirmado.',d:700}]},
+        q:'O que você faz agora?',
+        chs:[{t:'Forneço senha e dados — parece técnico real',ic:'🔑',tp:'bad',pt:0,pix:{show:true,amt:'R$ 4.700,00',bank:'Banco do Brasil',who:'Pix: transferência instruída por "técnico"',learn:'Com sua senha, o golpista transferiu tudo via Pix. Banco nunca manda técnico em casa.'}},{t:'Desligo — banco não manda técnico em casa',ic:'📵',tp:'good',pt:5,pix:{show:false}},{t:'Reporto o número ao banco oficial',ic:'🚨',tp:'good',pt:5,pix:{show:false}},{t:'Peço identificação com foto do técnico',ic:'🪪',tp:'mid',pt:2,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'💸 Seus dados foram coletados. Um motoboy virá pegar seu cartão.',d:700}],good:[{f:'sys',t:'✅ Você identificou o Golpe do Motoboy!',d:600}]},
+        q:'O que bancos NUNCA fazem?',
+        chs:[{t:'Mandar motoboy ou técnico buscar cartão em casa',ic:'🛵',tp:'good',pt:5,pix:{show:false}},{t:'Pedir senha por SMS ou telefone',ic:'🔑',tp:'good',pt:5,pix:{show:false}},{t:'Usar número de celular como SAC oficial',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'Bloquear cartão por SMS pedindo confirmação',ic:'💳',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Cartão seguro!',d:500}],bad:[{f:'sys',t:'⚠️ NUNCA entregue seu cartão a quem aparecer em casa.',d:500}]},
+        q:'Se aparecer alguém em casa dizendo ser do banco?',
+        chs:[{t:'Não abro a porta e ligo para o banco oficial',ic:'🚪',tp:'good',pt:5,pix:{show:false}},{t:'Peço que vá embora e chamo um familiar',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}},{t:'Nunca entrego cartão ou documento para ninguém',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Ligo para a polícia se insistir',ic:'👮',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Golpe do Motoboy bloqueado!',tx:'Bancos NUNCA mandam técnicos em casa. Você se protegeu verificando pelo número oficial.',fl:['Banco nunca manda buscar cartão em residência','Número de celular nunca é SAC oficial']},mid:{tp:'mid',ic:'🤔',tt:'Você desconfiou mas quase caiu!',tx:'Identificação pode ser falsificada. A regra é: banco nunca manda técnico — ponto.',fl:['Identificação pode ser falsificada','Número no verso do cartão é sempre o caminho']},bad:{tp:'bad',ic:'😨',tt:'Golpe do Motoboy!',tx:'NUNCA entregue seu cartão a quem aparecer em casa. Cancele pelo número oficial agora.',fl:['Banco nunca manda buscar cartão — nunca','Cancele o cartão pelo número oficial agora']}}
+    },
+    {th:'t-wa',ct:{n:'SICREDI CRÉDITO 🏛️',s:'',av:'🏛️',cl:'#006400'},ti:'',
+     intro:[{f:'them',t:'Bom dia, prezado aposentado!',d:700},{f:'them',t:'Crédito consignado PRÉ-APROVADO pra você.',d:1300},{f:'them',t:'R$12.500 | Taxa 1,8% ao mês | Sem consulta ao SPC',d:1900}],
+     steps:[
+       {ms:[{f:'them',t:'Para liberar hoje, acesse:',d:800},{f:'them',t:'sicredi-aposentado-credito.com/liberar',d:1200,lk:{ic:'🏦',dm:'sicredi-aposentado-credito.com',tt:'Sicredi — Crédito Especial',ds:'Libere R$12.500 hoje'}},{f:'them',t:'⚠️ Oferta válida somente HOJE!',d:1900}],
+        q:'Uma oferta de crédito "só hoje" chega no WhatsApp. O que você faz?',
+        chs:[{t:'Clico no link — preciso do dinheiro',ic:'🖱️',tp:'bad',pt:0,pix:{show:false}},{t:'Verifico se o domínio é oficial do Sicredi',ic:'🔍',tp:'good',pt:5,pix:{show:false}},{t:'Vou pessoalmente à agência do meu banco',ic:'🏦',tp:'good',pt:5,pix:{show:false}},{t:'Consulto com familiar antes',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ O site pediu CPF, data de nascimento, número do benefício e senha bancária.',d:700}],good:[{f:'sys',t:'🔍 Sicredi usa apenas "sicredi.com.br". O domínio "sicredi-aposentado-credito.com" é falso.',d:700}]},
+        q:'O que você faz agora?',
+        chs:[{t:'Forneço os dados — parece boa oportunidade',ic:'📋',tp:'bad',pt:0,pix:{show:true,amt:'R$ 12.500,00',bank:'Crédito no seu nome',who:'Empréstimo feito com seus dados',learn:'Com seus dados, golpistas fizeram um empréstimo de R$12.500 no seu nome. Consulte o Registrato no Banco Central.'}},{t:'Bloqueio — domínio falso confirmado',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Vou ao banco para consultar crédito real',ic:'🏦',tp:'good',pt:5,pix:{show:false}},{t:'Aviso vizinhos aposentados',ic:'📢',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{bad:[{f:'sys',t:'⚠️ Com seus dados, golpista fez um empréstimo em seu nome.',d:700}],good:[{f:'sys',t:'✅ Crédito consignado real não é ofertado por WhatsApp.',d:600}]},
+        q:'Como o crédito consignado é contratado de verdade?',
+        chs:[{t:'Pessoalmente na agência do seu banco',ic:'🏦',tp:'good',pt:5,pix:{show:false}},{t:'Pelo aplicativo oficial do banco',ic:'📱',tp:'good',pt:5,pix:{show:false}},{t:'NUNCA por WhatsApp ou link',ic:'🚫',tp:'good',pt:5,pix:{show:false}},{t:'Com desconto direto no benefício',ic:'📋',tp:'good',pt:5,pix:{show:false}}]},
+       {ms:{good:[{f:'sys',t:'🛡️ Você está protegido!',d:500}],bad:[{f:'sys',t:'⚠️ Consulte o Registrato: registrato.bcb.gov.br',d:500}]},
+        q:'Como verificar se fizeram empréstimos em seu nome?',
+        chs:[{t:'Registrato do Banco Central: registrato.bcb.gov.br',ic:'🌐',tp:'good',pt:5,pix:{show:false}},{t:'Extrato bancário regularmente',ic:'📊',tp:'good',pt:5,pix:{show:false}},{t:'CPF no Serasa mensalmente',ic:'📋',tp:'good',pt:5,pix:{show:false}},{t:'Peço ajuda a familiar de confiança',ic:'👨‍👩‍👧',tp:'good',pt:5,pix:{show:false}}]}
+     ],
+     oc:{good:{tp:'good',ic:'🛡️',tt:'Phishing de crédito bloqueado!',tx:'Você identificou o domínio falso. Crédito consignado NUNCA é ofertado por WhatsApp.',fl:['sicredi.com.br — único domínio oficial','Consignado real não vem por link de WhatsApp','Oferta "só hoje" = pressão para não pensar']},mid:{tp:'mid',ic:'🤔',tt:'Você desconfiou!',tx:'Sempre vá ao banco pessoalmente — é a forma mais segura de contratar crédito.',fl:['Agência bancária = sempre o caminho seguro']},bad:{tp:'bad',ic:'😨',tt:'Fraude de empréstimo!',tx:'Golpistas fizeram empréstimo em seu nome. Consulte o Registrato do Banco Central e bloqueie crédito no Serasa.',fl:['CPF + benefício INSS = empréstimo fraudulento possível','Bloqueio de crédito no Serasa é gratuito']}}
+    }
+  ]
+};
+
+const LEVELS=[
+  {min:0,max:200,med:'😟',tl:'Tá começando ainda',dc:'A gente sabe que é difícil. Continue treinando e mande pro WhatsApp pra ver como seus amigos vão sair!'},
+  {min:201,max:400,med:'🤔',tl:'Tá acordando...',dc:'Você pegou algumas, mas tem golpes que ainda enganariam você. Mais uma rodada?'},
+  {min:401,max:600,med:'🧠',tl:'Ficando esperto!',dc:'Bom instinto! Você já sabe identificar vários golpes. Continue praticando!'},
+  {min:601,max:700,med:'🛡️',tl:'Difícil te enganar',dc:'Você está acima da média dos brasileiros. Quase impossível te enganar.'},
+  {min:701,max:999,med:'🏆',tl:'Especialista Anti-Golpe',dc:'Impressionante! Você domina isso. Agora ensina a família!'}
+];
+
+/* ═══════════ STATE ═══════════ */
+let QS={pool:[],idx:0,sc:0,ok:0,no:0,st:0,best:0,pr:'',mode:'quiz'};
+let tInt=null,tV=15;
+let SS={pr:'',sc:[],sI:0,stI:0,sc_pts:0,ok:0,no:0,cur:null,hist:[]};
+let mQ=[],mBusy=false,typEl=null;
+
+/* ═══════════ NAV ═══════════ */
+const PGS=['pg-land','pg-cfg','pg-mode','pg-qlevels','pg-slevels','pg-quiz','pg-result'];
+function go(id){
+  PGS.forEach(p=>{const el=document.getElementById(p);if(el)el.classList.add('hidden');});
+  const land=document.getElementById('pg-land');
+  if(id==='pg-land'){land.style.display='';land.classList.remove('hidden');}
+  else{land.style.display='none';document.getElementById(id).classList.remove('hidden');}
+  window.scrollTo(0,0);
+}
+function bigText(){document.body.style.fontSize=document.getElementById('t-opt').checked?'18px':'16px';}
+function colorBlind(){document.body.className=document.getElementById('c-opt').value;}
+
+/* ═══════════ QUIZ ═══════════ */
+function initQuiz(pr){
+  QS={pool:[...QUIZ[pr]].sort(()=>Math.random()-.5),idx:0,sc:0,ok:0,no:0,st:0,best:0,pr,mode:'quiz'};
+  go('pg-quiz');renderQ();
+}
+function renderQ(){
+  const q=QS.pool[QS.idx],tot=QS.pool.length;
+  document.getElementById('q-fill').style.width=`${(QS.idx/tot)*100}%`;
+  document.getElementById('q-counter').innerText=`Pergunta ${QS.idx+1} de ${tot}`;
+  document.getElementById('q-txt').innerText=q.q;
+  document.getElementById('q-img').innerHTML=`<img src="${q.img}" alt="" loading="lazy">`;
+  document.getElementById('q-src').innerText=q.src?`Fonte: ${q.src}`:'';
+  document.getElementById('q-acts').classList.remove('hidden');
+  document.getElementById('q-fb').classList.add('hidden');
+  updStr();startT();
+}
+function startT(){
+  const use=document.getElementById('ti-opt').checked;
+  document.getElementById('tw').classList.toggle('hidden',!use);
+  if(!use)return;
+  tV=15;
+  const ring=document.getElementById('t-ring'),num=document.getElementById('t-num');
+  ring.className='tfill';num.className='tnum';num.innerText=15;ring.style.strokeDashoffset=0;
+  clearInterval(tInt);
+  tInt=setInterval(()=>{
+    tV--;num.innerText=tV;
+    ring.style.strokeDashoffset=126*(1-tV/15);
+    if(tV<=5){ring.classList.add('danger');num.classList.add('danger');}
+    if(tV<=0){clearInterval(tInt);qTO();}
+  },1000);
+}
+function stopT(){clearInterval(tInt);}
+function qTO(){
+  const q=QS.pool[QS.idx];QS.no++;QS.st=0;updStr();
+  document.getElementById('q-acts').classList.add('hidden');
+  const fb=document.getElementById('q-fb-msg');
+  fb.className='fb fb-to';
+  fb.innerHTML=`<strong>⏰ Tempo!</strong><p>Era: <strong>${q.a?'VERDADEIRO':'FALSO'}</strong>. ${q.e}</p>${q.src?`<p class="fb-src">📎 ${q.src}</p>`:''}`;
+  document.getElementById('q-fb').classList.remove('hidden');
+}
+function chk(v){
+  stopT();
+  const q=QS.pool[QS.idx],ok=(v===q.a);
+  if(ok){QS.sc+=100;QS.ok++;QS.st++;if(QS.st>QS.best)QS.best=QS.st;}
+  else{QS.no++;QS.st=0;}
+  updStr();
+  const fb=document.getElementById('q-fb-msg');
+  fb.className=`fb ${ok?'fb-ok':'fb-ko'}`;
+  fb.innerHTML=`<strong>${ok?'✅ ACERTOU! 🎉':'❌ ERROU!'}</strong><p>${q.e}</p>${q.src?`<p class="fb-src">📎 ${q.src}</p>`:''}`;
+  document.getElementById('q-acts').classList.add('hidden');
+  document.getElementById('q-fb').classList.remove('hidden');
+}
+function qnxt(){QS.idx++;if(QS.idx<QS.pool.length)renderQ();else showResult();}
+function updStr(){document.getElementById('streak-el').innerHTML=QS.st>=2?`<span class="streak-b">🔥 ${QS.st} seguidas!</span>`:''}
+
+/* ═══════════ RESULT ═══════════ */
+function showResult(){
+  const max=QS.pool.length*(QS.mode==='sim'?20:100);
+  const lv=LEVELS.find(l=>QS.sc>=l.min&&QS.sc<=l.max)||LEVELS[LEVELS.length-1];
+  document.getElementById('r-sc').innerText=QS.sc;
+  document.getElementById('r-lb').innerText=`pontos de ${max}`;
+  document.getElementById('r-med').innerText=lv.med;
+  document.getElementById('r-lt').innerText=lv.tl;
+  document.getElementById('r-ld').innerText=lv.dc;
+  document.getElementById('r-ok').innerText=QS.ok;
+  document.getElementById('r-no').innerText=QS.no;
+  document.getElementById('r-str').innerText=QS.best;
+  go('pg-result');
+}
+function waShare(){
+  const profs={jovem:'Jovem',adulto:'Adulto',idoso:'Idoso'};
+  const modes={quiz:'Quiz',sim:'Simulação'};
+  const lv=LEVELS.find(l=>QS.sc>=l.min&&QS.sc<=l.max)||LEVELS[LEVELS.length-1];
+  const max=QS.pool.length*(QS.mode==='sim'?20:100);
+  const t=`🛡️ *CaíNão — Você seria enganado?*\n\nFiz o *${modes[QS.mode]}* (perfil ${profs[QS.pr]}) e tirei *${QS.sc}/${max} pontos*!\nNível: ${lv.med} *${lv.tl}*\n\n✅ ${QS.ok} acertos | ❌ ${QS.no} erros | 🔥 Sequência: ${QS.best}\n\n👉 Você consegue ir melhor? Testa e me conta!\nhttps://robertojulia.github.io/Quiz-real-ou-fake/`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(t)}`,'_blank');
+}
+
+/* ═══════════ PIX OVERLAY ═══════════ */
+let pixCallback=null;
+function showPix(data,cb){
+  pixCallback=cb;
+  document.getElementById('pix-amt').innerText=data.amt;
+  document.getElementById('pix-bank').innerText=data.bank;
+  document.getElementById('pix-who').innerText=data.who;
+  document.getElementById('pix-learn').innerHTML=`<strong>O que você aprendeu:</strong><br>${data.learn}`;
+  document.getElementById('pix-overlay').classList.remove('hidden');
+}
+function closePix(){
+  document.getElementById('pix-overlay').classList.add('hidden');
+  if(pixCallback)pixCallback();
+  pixCallback=null;
+}
+
+/* ═══════════ SIMULATION ═══════════ */
+function initSim(pr){
+  PGS.forEach(p=>{const el=document.getElementById(p);if(el)el.classList.add('hidden');});
+  document.getElementById('pg-land').style.display='none';
+  SS={pr,sc:[...SIMS[pr]],sI:0,stI:0,sc_pts:0,ok:0,no:0,cur:null,hist:[]};
+  QS.pr=pr;QS.mode='sim';
+  document.getElementById('sim-screen').classList.remove('hidden');
+  loadScene(0);
+}
+function exitSim(){
+  document.getElementById('sim-screen').classList.add('hidden');
+  document.getElementById('pg-land').style.display='';
+  go('pg-slevels');
+}
+function loadScene(idx){
+  const sc=SS.sc[idx];SS.cur=sc;SS.stI=0;SS.hist=[];
+  const screen=document.getElementById('sim-screen');
+  screen.className='';screen.classList.add(sc.th);
+  document.getElementById('sim-av').innerText=sc.ct.av;
+  document.getElementById('sim-av').style.background=`linear-gradient(135deg,${sc.ct.cl},${sc.ct.cl}88)`;
+  document.getElementById('sim-cn').innerText=sc.ct.n;
+  document.getElementById('sim-cs').innerText=sc.ct.s;
+  document.getElementById('sim-ti').innerText=sc.ti||'';
+  const tot=SS.sc.length;
+  document.getElementById('sim-lbl').innerText=`Cena ${idx+1} de ${tot}`;
+  document.getElementById('sim-pf').style.width=`${(idx/tot)*100}%`;
+  document.getElementById('sim-pts').innerText=`${SS.sc_pts} pts`;
+  const now=new Date();
+  document.getElementById('sim-clk').innerText=`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('sim-chat').innerHTML='';
+  document.getElementById('sim-ch').classList.add('hidden');
+  document.getElementById('sim-oc-wrap').classList.add('hidden');
+  const d=document.createElement('div');d.className='date-div';d.innerText='Hoje';
+  document.getElementById('sim-chat').appendChild(d);
+  mQ=sc.intro.map(m=>({...m}));
+  procQ(()=>showStep(0));
+}
+function procQ(cb){
+  if(mBusy)return;mBusy=true;
+  function nx(){
+    if(!mQ.length){mBusy=false;if(cb)cb();return;}
+    const msg=mQ.shift();
+    setTimeout(()=>{
+      if(msg.f==='them'||msg.f==='other'){showTyping(()=>{hideTyping();appMsg(msg);nx();},Math.min(msg.t?msg.t.length*14+250:700,1900));}
+      else{appMsg(msg);nx();}
+    },msg.d||500);
+  }
+  nx();
+}
+function showTyping(cb,dur){
+  hideTyping();
+  const chat=document.getElementById('sim-chat');
+  const sc=SS.cur;
+  let bg='rgba(255,255,255,.08)';
+  if(sc.th==='t-wa')bg='#1f2c34';
+  else if(sc.th==='t-sms')bg='#1c1c1e';
+  else if(sc.th==='t-email')bg='white';
+  typEl=document.createElement('div');typEl.className='mrow them';
+  typEl.innerHTML=`<div class="ty" style="background:${bg}"><div class="td" style="background:${sc.th==='t-email'?'#bdc1c6':'#8696a0'}"></div><div class="td" style="background:${sc.th==='t-email'?'#bdc1c6':'#8696a0'}"></div><div class="td" style="background:${sc.th==='t-email'?'#bdc1c6':'#8696a0'}"></div></div>`;
+  chat.appendChild(typEl);sC();
+  setTimeout(()=>{cb();},dur);
+}
+function hideTyping(){if(typEl){typEl.remove();typEl=null;}}
+function appMsg(msg){
+  const chat=document.getElementById('sim-chat');
+  if(msg.f==='sys'){const el=document.createElement('div');el.className='sys-msg';el.innerText=msg.t;chat.appendChild(el);sC();return;}
+  const sc=SS.cur;const isMe=msg.f==='me';
+  let bg,color,tc;
+  if(sc.th==='t-wa'){bg=isMe?'#005c4b':'#1f2c34';color='#e9edef';tc='#8696a0';}
+  else if(sc.th==='t-sms'){bg=isMe?'#007aff':'#1c1c1e';color='#fff';tc='rgba(255,255,255,.4)';}
+  else if(sc.th==='t-email'){bg='white';color='#202124';tc='#5f6368';}
+  else{bg='rgba(255,255,255,.09)';color='#e5e5ea';tc='rgba(255,255,255,.38)';}
+  const now=new Date();const t=`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  let html=`<p style="margin:0;color:${color};font-size:.83rem;line-height:1.5">${msg.t||''}</p>`;
+  if(msg.lk){const l=msg.lk;let lbg=sc.th==='t-email'?'#f1f3f4':'rgba(0,0,0,.18)';let libg=sc.th==='t-email'?'#e8eaed':'#1a1a2e';html+=`<div class="lp" style="background:${lbg}"><div class="lp-img" style="background:${libg}">${l.ic||'🔗'}</div><div class="lp-bdy"><div class="lp-dom" style="color:${sc.th==='t-wa'?'#25D366':'#6366f1'}">${l.dm}</div><div class="lp-ttl" style="color:${color}">${l.tt}</div><div class="lp-dsc">${l.ds}</div></div></div>`;}
+  html+=`<div class="mt" style="color:${tc}">${t}${isMe&&sc.th==='t-wa'?' ✓✓':''}</div>`;
+  const row=document.createElement('div');row.className=`mrow ${isMe?'me':'them'}`;
+  row.innerHTML=`<div class="mbub" style="background:${bg};border-radius:${isMe?'17px 17px 3px 17px':'17px 17px 17px 3px'}">${html}</div>`;
+  chat.appendChild(row);sC();
+}
+function sC(){const c=document.getElementById('sim-chat');setTimeout(()=>{c.scrollTop=c.scrollHeight;},35);}
+function showStep(sIdx){
+  const sc=SS.cur;if(sIdx>=sc.steps.length){showOutcome();return;}
+  SS.stI=sIdx;const step=sc.steps[sIdx];
+  const msgs=Array.isArray(step.ms)?step.ms:[];
+  mQ=msgs.map(m=>({...m}));
+  procQ(()=>{
+    document.getElementById('sim-cq').innerText=step.q;
+    const list=document.getElementById('sim-clist');list.innerHTML='';
+    const icons=['🅐','🅑','🅒','🅓'];
+    step.chs.forEach((ch,i)=>{
+      const btn=document.createElement('button');btn.className='ch-btn';
+      btn.innerHTML=`<span style="font-size:.95rem;flex-shrink:0">${icons[i]}</span><span>${ch.t}</span>`;
+      btn.onclick=()=>handleCh(ch,btn,step,i);
+      list.appendChild(btn);
+    });
+    document.getElementById('sim-ch').classList.remove('hidden');
+    document.getElementById('sim-oc-wrap').classList.add('hidden');
+    sC();
+  });
+}
+function handleCh(ch,btn,step,idx){
+  document.querySelectorAll('.ch-btn').forEach(b=>b.disabled=true);
+  btn.classList.add(ch.tp==='good'?'c-good':ch.tp==='bad'?'c-bad':'c-mid');
+  const proceed=()=>{
+    SS.sc_pts+=ch.pt||0;SS.hist.push({tp:ch.tp,pt:ch.pt||0});
+    document.getElementById('sim-pts').innerText=`${SS.sc_pts} pts`;
+    if(ch.tp==='good')SS.ok++;else SS.no++;
+    setTimeout(()=>{
+      document.getElementById('sim-ch').classList.add('hidden');
+      const nI=SS.stI+1;
+      if(nI<SS.cur.steps.length){
+        const nStep=SS.cur.steps[nI];let nMsgs=[];
+        if(!Array.isArray(nStep.ms)&&typeof nStep.ms==='object'){nMsgs=nStep.ms[ch.tp]||nStep.ms['good']||[];}
+        mQ=nMsgs.map(m=>({...m}));
+        procQ(()=>showStep(nI));
+      } else {showOutcome();}
+    },500);
+  };
+  if(ch.pix&&ch.pix.show){
+    setTimeout(()=>{showPix(ch.pix,proceed);},400);
+  } else {proceed();}
+}
+function showOutcome(){
+  document.getElementById('sim-ch').classList.add('hidden');
+  const sc=SS.cur;
+  const good=SS.hist.filter(h=>h.tp==='good').length;
+  const ratio=good/Math.max(SS.hist.length,1);
+  const oc=ratio>=0.75?sc.oc.good:ratio>=0.4?sc.oc.mid:sc.oc.bad;
+  const flags=oc.fl.map(f=>`<div class="oc-flag ${oc.tp==='good'?'ok':''}">${f}</div>`).join('');
+  const pts=SS.hist.reduce((a,h)=>a+h.pt,0);
+  const card=document.getElementById('sim-oc-card');
+  card.className=`oc-card ${oc.tp}`;
+  const fc=oc.tp==='good'?'#34D399':oc.tp==='mid'?'#FCD34D':'#FCA5A5';
+  card.innerHTML=`<span class="oc-icon">${oc.ic}</span><div class="oc-title">${oc.tt}</div><p class="oc-text">${oc.tx}</p><div class="oc-flags"><p class="oc-ft" style="color:${fc}">${oc.tp==='good'?'✅ O que você fez certo:':'⚠️ O que deveria ter feito:'}</p>${flags}</div><div class="oc-pts">🏆 +${pts} pontos</div>`;
+  const isLast=SS.sI>=SS.sc.length-1;
+  document.getElementById('sim-nxt').innerText=isLast?'Ver resultado final 🏆':'Próxima cena →';
+  document.getElementById('sim-oc-wrap').classList.remove('hidden');
+  sC();
+}
+function simNext(){
+  SS.sI++;
+  if(SS.sI>=SS.sc.length){
+    document.getElementById('sim-screen').classList.add('hidden');
+    document.getElementById('pg-land').style.display='';
+    QS.sc=SS.sc_pts;QS.ok=SS.ok;QS.no=SS.no;QS.best=Math.max(SS.ok,1);QS.pool=SS.sc;
+    showResult();
+  } else {loadScene(SS.sI);}
+}
+</script>
+</body>
+</html>
